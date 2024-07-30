@@ -16,29 +16,7 @@ public Plugin myinfo =
 
 public void OnPluginStart()
 {
-	RegServerCmd("check_portal_bounds", CheckPortalBounds, "Resets the portal guns of all players to match the current settings.");
-}
-
-Action CheckPortalBounds(int args)
-{
-	int ent = -1;
-	while((ent = FindEntityByClassname(ent, "prop_portal")) != -1) 
-	{
-		if (IsValidEntity(ent)) 
-		{
-			// if both portals are valid, exit the loop.
-			float min[3];
-			float max[3];
-			float origin[3];
-			GetEntPropVector(ent, Prop_Send, "m_vecMins", min);
-			GetEntPropVector(ent, Prop_Send, "m_vecMaxs", max);
-			GetEntPropVector(ent, Prop_Send, "m_vecOrigin", origin);
-			AddVectors(min,origin,min);
-			AddVectors(max,origin,max);
-			PrintToServer("%f,%f,%f | %f,%f,%f", min[0], min[1], min[2], max[0], max[1], max[2]);
-		}
-	}
-	return Plugin_Handled;
+	
 }
 
 bool PlayerFilter(int entity, int contentsMask, int client)

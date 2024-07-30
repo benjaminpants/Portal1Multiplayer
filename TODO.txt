@@ -1,2 +1,3 @@
 TODO:
-- Fix neurotoxin if feasible
+- Fix neurotoxin via creating a fake player if no player in slot 1 AND cancel the timer right before it actually goes off and then perform our OWN kill stuff.
+- Add sv_showportalnames convar to portalvisiblenames.sp

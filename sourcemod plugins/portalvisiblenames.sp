@@ -14,9 +14,11 @@ public Plugin myinfo =
 	url = "https://github.com/benjaminpants"
 };
 
+ConVar gcv_portalNamesEnabled;
+
 public void OnPluginStart()
 {
-	
+	gcv_portalNamesEnabled = CreateConVar("sv_showportalnames", "1", "If the owner of portal's should be shown to the client.");
 }
 
 bool PlayerFilter(int entity, int contentsMask, int client)
@@ -41,6 +43,7 @@ public void OnGameFrame()
 			int entIndex = TR_GetEntityIndex(INVALID_HANDLE);
 			if (entIndex == 0)
 			{
+				if (!gcv_portalNamesEnabled.BoolValue) continue;
 				float rayEnd[3];
 				TR_GetEndPosition(rayEnd, INVALID_HANDLE);
 

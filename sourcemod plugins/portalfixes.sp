@@ -1,6 +1,7 @@
 #include <sdktools>
 #include <sourcemod>
 #include <entitylump>
+#include <portalutils>
 
 public Plugin myinfo =
 {
@@ -275,49 +276,9 @@ public void Event_PlayerDisconnect(Event event, const char[] name, bool dontBroa
 	ClearAllBadPortalGuns();
 }
 
-// find the two portals that belong to the specified client's linkage id and if everyone who belongs to said linkageID is dead, fizzle the portals
-void FizzlePortalsBelongingToClient(int client, bool[] fizzled)
-{
-	int linkId = CalculateLinkageIDForPlayer(client);
-	int count = CountOwnedPortalGunsOfLink(linkId);
-	// when this function is called the player is likely not FULLY processed as dead by the game, so we check for 1 owned gun instead of zero
-	if (count > 1)
-	{
-		return;
-	}
-	
-	int portalGun = GetClientPortalGun(client);
-	if (!IsValidEntity(portalGun))
-	{
-		return;
-	}
-	
-	int linkage[2];
-	FindAllPortalsOfLinkageID(linkId, linkage);
-	
-	fizzled[0] = false;
-	fizzled[1] = false;
-	
-	if (IsValidEntity(linkage[0]) && (GetEntProp(portalGun, Prop_Send, "m_bCanFirePortal1") == 1))
-	{
-		AcceptEntityInput(linkage[0], "Fizzle");
-		fizzled[0] = true;
-	}
-	if (IsValidEntity(linkage[1]) && (GetEntProp(portalGun, Prop_Send, "m_bCanFirePortal2") == 1))
-	{
-		AcceptEntityInput(linkage[1], "Fizzle");
-		fizzled[1] = true;
-	}
-}
-
 // refresh all player guns to account for the current settings/auto settings
 void RefreshAllPlayerGuns()
 {
-	// TODO: implement
-	// go through all players
-	// calculate their owned portals using FindAllPortalsOfLinkageID
-	// fizzle the respective portals(calling Fizzle more than once shouldn't have any adverse side effects, right?)
-	// set the appropiate fields instead of erasing their guns as its just not necessary(and its faster)
 	for (int i = 0; i < MaxClients; i++)
 	{
 		int client = (i + 1);
@@ -339,11 +300,11 @@ void RefreshAllPlayerGuns()
 				// dont fizzle orange/blue auto portals in the case this update is because someone picked up a new ASHPD with the auto setting on.
 				if (clientCanFirePrimary && IsValidEntity(ownedPortals[0]))
 				{
-					AcceptEntityInput(ownedPortals[0], "Fizzle");
+					FizzlePortal(ownedPortals[0]);
 				}
 				if (clientCanFireSecondary && IsValidEntity(ownedPortals[1]))
 				{
-					AcceptEntityInput(ownedPortals[1], "Fizzle");
+					FizzlePortal(ownedPortals[1]);
 				}
 				// if the setting dictates we are giving a gun, then update the gun.
 				// otherwise, destroy the gun the player is holding.
@@ -425,7 +386,7 @@ void GivePlayerPortalGun(int client)
 	if (entityId != -1)
 	{
 		DispatchSpawn(entityId);
-		new Float:position[3];
+		float position[3];
 		GetEntPropVector(client, Prop_Send, "m_vecOrigin", position);
 		
 		// we remove these fields from the portal gun so that there isn't an inbetween time for the player to fire a portal before their linkageID gets set
@@ -445,44 +406,6 @@ void GivePlayerPortalGun(int client)
 	{
 		PrintToServer("CreateEntityByName returned -1...");
 	}
-}
-
-// find the first and second IDs of the portals corresponding to the linkageID.
-// results are stored in portalIndexes
-void FindAllPortalsOfLinkageID(int linkage, int[] portalIndexes)
-{
-	int firstPortalEnt = -1;
-	int secondPortalEnt = -1;
-	
-	int ent = -1;
-	while((ent = FindEntityByClassname(ent, "prop_portal")) != -1) 
-	{
-		if (IsValidEntity(ent)) 
-		{
-			// if both portals are valid, exit the loop.
-			if (IsValidEntity(firstPortalEnt) && IsValidEntity(secondPortalEnt))
-			{
-				break;
-			}
-			int entLinkage = GetEntProp(ent, Prop_Data, "m_iLinkageGroupID");
-			if (entLinkage != linkage)
-			{
-				continue;
-			}
-			bool isSecond = (GetEntProp(ent, Prop_Data, "m_bIsPortal2") == 1);
-			if (isSecond)
-			{
-				secondPortalEnt = ent;
-			}
-			else
-			{
-				firstPortalEnt = ent;
-			}
-		}
-	}
-	
-	portalIndexes[0] = firstPortalEnt;
-	portalIndexes[1] = secondPortalEnt;
 }
 
 // Clears portal guns that don't have any owners, and if automatic mode is on we also preserve named guns so pedestals dont break.
@@ -510,48 +433,6 @@ void ClearAllBadPortalGuns()
 			}
 		}
 	}
-}
-
-// Get the portal gun that belongs to the specific client
-int GetClientPortalGun(int client)
-{
-	int ent = -1;
-	while((ent = FindEntityByClassname(ent, "weapon_portalgun")) != -1) 
-	{
-		if (IsValidEntity(ent)) 
-		{
-			int entOwner = GetEntPropEnt(ent, Prop_Data, "m_hOwner");
-			if (entOwner == client)
-			{
-				return ent;
-			}
-		}
-	}
-	return -1;
-}
-
-// count all the owned portal guns that fire a specific linkageID, use -1 to count all owned portal guns
-int CountOwnedPortalGunsOfLink(int linkage)
-{
-	int count = 0;
-	int ent = -1;
-	while((ent = FindEntityByClassname(ent, "weapon_portalgun")) != -1) 
-	{
-		if (IsValidEntity(ent)) 
-		{
-			// if we aren't counting all owned guns and the linkageID of this gun does not match the target, skip.
-			if ((linkage != -1) && (GetEntProp(ent, Prop_Data, "m_iPortalLinkageGroupID") != linkage))
-			{
-				continue;
-			}
-			int entOwner = GetEntPropEnt(ent, Prop_Data, "m_hOwner");
-			if (entOwner != -1)
-			{
-				count++;
-			}
-		}
-	}
-	return count;
 }
 
 

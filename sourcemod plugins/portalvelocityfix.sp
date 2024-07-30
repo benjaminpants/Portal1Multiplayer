@@ -8,7 +8,7 @@ public Plugin myinfo =
 	author = "MTM101",
 	description = "Massively improves the consistency of Portals in Portal 1 multiplayer.",
 	version = "1.0",
-	url = "https://github.com/benjaminpants"
+	url = "https://github.com/benjaminpants/Portal1MultiplayerFixes"
 };
 
 float g_playerVelocities[MAXPLAYERS][3];

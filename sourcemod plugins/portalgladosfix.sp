@@ -7,7 +7,7 @@ public Plugin myinfo =
 	author = "MTM101",
 	description = "Fixes GLaDOS lines not being hearable in Portal 1 multiplayer. Sometimes. Still WIP.",
 	version = "1.0",
-	url = "https://github.com/benjaminpants"
+	url = "https://github.com/benjaminpants/Portal1MultiplayerFixes"
 };
 
 int g_playerGLaDOSMap[MAXPLAYERS] = {-1, ...};

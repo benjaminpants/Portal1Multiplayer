@@ -11,7 +11,7 @@ public Plugin myinfo =
 	author = "MTM101",
 	description = "Makes names visible in Portal 1.",
 	version = "1.0",
-	url = "https://github.com/benjaminpants"
+	url = "https://github.com/benjaminpants/Portal1MultiplayerFixes"
 };
 
 ConVar gcv_portalNamesEnabled;

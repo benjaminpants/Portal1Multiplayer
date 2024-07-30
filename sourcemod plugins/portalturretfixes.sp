@@ -8,7 +8,7 @@ public Plugin myinfo =
 	author = "MTM101",
 	description = "Fixes problems with turrets and rocket turrets in P1 multiplayer",
 	version = "1.0",
-	url = "https://github.com/benjaminpants"
+	url = "https://github.com/benjaminpants/Portal1MultiplayerFixes"
 };
 
 ConVar gcv_rocketTurretUpdateRate;

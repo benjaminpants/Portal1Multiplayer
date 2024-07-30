@@ -9,7 +9,7 @@ public Plugin myinfo =
 	author = "MTM101",
 	description = "Fixes a variety of issues with the P1 Player in multiplayer and provides options for changing behavior.",
 	version = "1.0",
-	url = "https://github.com/benjaminpants"
+	url = "https://github.com/benjaminpants/Portal1MultiplayerFixes"
 };
 
 // TODO: delete portal_ragdoll when created so we dont shit ourselves when the player commits suicide.

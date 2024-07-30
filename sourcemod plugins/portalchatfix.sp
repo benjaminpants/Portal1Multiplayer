@@ -7,7 +7,7 @@ public Plugin myinfo =
 	author = "MTM101",
 	description = "Fixes chat being broken in P1 Multiplayer.",
 	version = "1.0",
-	url = "https://github.com/benjaminpants"
+	url = "https://github.com/benjaminpants/Portal1MultiplayerFixes"
 };
 
 public void OnPluginStart()

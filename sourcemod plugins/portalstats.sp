@@ -7,7 +7,7 @@ public Plugin myinfo =
 	author = "MTM101",
 	description = "Allows players to use the portalstats command to view their stats as they would appear in challenge mode.",
 	version = "1.0",
-	url = "https://github.com/benjaminpants"
+	url = "https://github.com/benjaminpants/Portal1MultiplayerFixes"
 };
 
 public void OnPluginStart()

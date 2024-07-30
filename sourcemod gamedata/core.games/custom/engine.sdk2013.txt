@@ -66,4 +66,51 @@
 			}
 		}
 	}
+	
+	"#default"
+	{
+		"#supported"
+		{
+			"game"					"hl2mp"
+			"game"					"sourceforts"
+			"game"					"tf"
+			"game"					"ageofchivalry"
+			"game"					"obsidian"
+			"game"					"zombie_master"
+			"game"					"bg2"
+ 			"game"					"$Insurgency" // mod
+			"game"					"cspromod"
+			"game"					"pvkii"
+			"game"					"zps"
+			"game"					"gesource"
+			"game"					"RnLBeta"
+			"game"					"fas"
+			"game"					"fof"
+			"game"					"swarm"
+			"game"					"dinodday"
+			"game"					"esmod"
+			"game"					"ios"
+			"game"					"eye"
+			"game"					"nucleardawn"
+			"game"					"hl2ctf"
+			"game"					"ag2"
+			"game"					"nmrih"
+			"game"					"berimbau"
+			"game"					"cstrike"
+			"game"					"synergy"
+			"game"					"bms"
+			"game"					"kz"
+			"game"					"csgo"
+			"game"					"reactivedrop"
+			"game"					"FortressForever"
+			"game"					"open_fortress"
+			"game"					"tf2classic"
+			"game"					"portal"
+		}
+		
+		"Keys"
+		{
+			"HudTextMsg"			"HudMsg"
+		}
+	}
 }

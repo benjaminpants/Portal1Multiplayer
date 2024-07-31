@@ -24,6 +24,46 @@ stock int GetPortalIndexOnRay(float startPosition[3], float endPosition[3])
 }
 
 
+char portalPassthroughEntities[][] = 
+{
+	"prop_physics",
+	"func_physbox",
+	"npc_portal_turret_floor",
+	"prop_energy_ball",
+	"npc_security_camera",
+	"player",
+	"simple_physics_prop",
+	"simple_physics_brush",
+	"prop_ragdoll",
+	"prop_glados_core",
+	"updateitem2"
+}
+
+stock bool TracePortalFilter(int entity, int contentsMask)
+{
+	char className[33];
+	GetEntityClassname(entity, className, 33);
+	// todo: fix
+	for (int i = 0; i < 10; i++)
+	{
+		if (strcmp(className,portalPassthroughEntities[i]) == 0)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+stock int TR_GetPortalIndex(Handle hndl = INVALID_HANDLE)
+{
+	float rayStart[3];
+	float rayEnd[3];
+	TR_GetStartPosition(hndl, rayStart);
+	TR_GetEndPosition(rayEnd, hndl);
+
+	return GetPortalIndexOnRay(rayStart, rayEnd);
+}
+
 stock float IntersectRayWithPortal(float startPosition[3], float endPosition[3], int portalEnt)
 {
 	if ((!IsValidEntity(portalEnt)) || (GetEntProp(portalEnt, Prop_Data, "m_bActivated") != 1))

@@ -44,7 +44,7 @@ stock bool GetPortalExtents(int portalEnt, float min[3], float max[3])
 
 // find the first and second IDs of the portals corresponding to the linkageID.
 // results are stored in portalIndexes
-stock void FindAllPortalsOfLinkageID(int linkage, int[] portalIndexes)
+stock void FindAllPortalsOfLinkageID(int linkage, int[] portalIndexes, bool createIfNoneFound = false)
 {
 	int firstPortalEnt = -1;
 	int secondPortalEnt = -1;
@@ -76,6 +76,24 @@ stock void FindAllPortalsOfLinkageID(int linkage, int[] portalIndexes)
 		}
 	}
 	
+	if (createIfNoneFound)
+	{
+		if (firstPortalEnt == -1)
+		{
+			int entityId = CreateEntityByName("prop_portal");
+			SetEntProp(entityId, Prop_Data, "m_iLinkageGroupID", linkage);
+			SetEntProp(entityId, Prop_Data, "m_bIsPortal2", false);
+			DispatchSpawn(entityId);
+		}
+		if (secondPortalEnt == -1)
+		{
+			int entityId = CreateEntityByName("prop_portal");
+			SetEntProp(entityId, Prop_Data, "m_iLinkageGroupID", linkage);
+			SetEntProp(entityId, Prop_Data, "m_bIsPortal2", true);
+			DispatchSpawn(entityId);
+		}
+	}
+
 	portalIndexes[0] = firstPortalEnt;
 	portalIndexes[1] = secondPortalEnt;
 }

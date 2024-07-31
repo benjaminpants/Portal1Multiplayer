@@ -28,7 +28,6 @@ void OnPortalGunFire(const char[] output, int portalGun, int activator, float de
 	// this shouldnt ever be the case but just incase
 	if (!IsValidEntity(portalGun))
 	{
-		PrintToServer("Caller isn't valid? %i", portalGun);
 		return;
 	}
 
@@ -47,7 +46,6 @@ void OnPortalGunFire(const char[] output, int portalGun, int activator, float de
 	int portalIndex = TR_GetPortalIndex();
 	if (!IsValidEntity(portalIndex))
 	{
-		PrintToServer("No portal found, no need to do anything!");
 		return;
 	}
 	// get the linkage id of the gun
@@ -55,7 +53,6 @@ void OnPortalGunFire(const char[] output, int portalGun, int activator, float de
 	int portalLinkageId = GetEntProp(portalIndex, Prop_Data, "m_iLinkageGroupID");
 	if (linkageId == portalLinkageId)
 	{
-		PrintToServer("Linkage matches!");
 		return;
 	}
 	// get the portals position and angles and set our currently firing portal to its angles
@@ -78,7 +75,6 @@ void OnPortalGunFire(const char[] output, int portalGun, int activator, float de
 	}
 	if (!IsValidEntity(targetPortal))
 	{
-		PrintToServer("targetPortal not valid? Help?");
 		return;
 	}
 	SetEntProp(targetPortal, Prop_Data, "m_iDelayedFailure", 0);

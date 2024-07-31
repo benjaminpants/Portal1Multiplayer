@@ -382,20 +382,14 @@ Action ChangePortalGunLinkageAndFirePortal(Handle timer, DataPack pack)
 
 void GivePlayerPortalGun(int client)
 {
-	int entityId = CreateEntityByName("weapon_portalgun");
+	int entityId = GivePlayerItem(client, "weapon_portalgun");
 	if (entityId != -1)
 	{
-		DispatchSpawn(entityId);
-		float position[3];
-		GetEntPropVector(client, Prop_Send, "m_vecOrigin", position);
-		
 		// we remove these fields from the portal gun so that there isn't an inbetween time for the player to fire a portal before their linkageID gets set
 		// (yes, this is something that has genuinely happened during testing)
 		DispatchKeyValue(entityId, "CanFirePortal1", "0");
 		DispatchKeyValue(entityId, "CanFirePortal2", "0");
 		
-		TeleportEntity(entityId, position, NULL_VECTOR, NULL_VECTOR);
-		SetEntityOwner(entityId, client);
 		DataPack pack = new DataPack();
 		pack.WriteCell(client);
 		pack.WriteCell(entityId);

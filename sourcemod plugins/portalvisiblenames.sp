@@ -19,6 +19,14 @@ ConVar gcv_portalNamesEnabled;
 public void OnPluginStart()
 {
 	gcv_portalNamesEnabled = CreateConVar("sv_showportalnames", "1", "If the owner of portal's should be shown to the client.");
+	HookEntityOutput("prop_portal", "OnPlacedSuccessfully", OnPortalPlace);
+}
+
+void OnPortalPlace(const char[] output, int caller, int activator, float delay)
+{
+	if (!IsValidEntity(caller)) return;
+	char playerName[33];
+	SetOrGetPortalName(playerName, caller, true);
 }
 
 bool PlayerFilter(int entity, int contentsMask, int client)
@@ -26,6 +34,27 @@ bool PlayerFilter(int entity, int contentsMask, int client)
 	if (entity == client) return false;
 	return true;
 }
+
+void SetOrGetPortalName(char playerName[33], int portalIndex, bool forceRecalculate)
+{
+	if (forceRecalculate || (!GetEntPropString(portalIndex, Prop_Data, "m_target", playerName, 33)))
+	{
+		int gunPlacedBy = GetEntPropEnt(portalIndex,Prop_Data, "m_hPlacedBy");
+		if (!IsValidEntity(gunPlacedBy))
+		{
+			playerName = "";
+			SetEntPropString(portalIndex, Prop_Data, "m_target", playerName);
+			return;
+		}
+		int owner = GetOwnerOfWeapon(gunPlacedBy);
+		if (IsValidEntity(owner))
+		{
+			GetClientName(owner, playerName, 33)
+			SetEntPropString(portalIndex, Prop_Data, "m_target", playerName);
+		}
+	}
+}
+
 
 public void OnGameFrame()
 {
@@ -60,20 +89,7 @@ public void OnGameFrame()
 				}
 				SetHudTextParams(-1.0,0.55,0.2,255,255,255,255,0,0.2,0.0,0.0);
 				char playerName[33];
-				if (!GetEntPropString(portalIndex, Prop_Data, "m_target", playerName, 33))
-				{
-					int gunPlacedBy = GetEntPropEnt(portalIndex,Prop_Data, "m_hPlacedBy");
-					if (!IsValidEntity(gunPlacedBy))
-					{
-						continue;
-					}
-					int owner = GetOwnerOfWeapon(gunPlacedBy);
-					if (IsValidEntity(owner))
-					{
-						GetClientName(owner, playerName, 33)
-						SetEntPropString(portalIndex, Prop_Data, "m_target", playerName);
-					}
-				}
+				SetOrGetPortalName(playerName, portalIndex, false);
 				ShowHudText(i, 1, "%s's Portal", playerName);
 				continue;
 			}

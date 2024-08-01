@@ -14,7 +14,7 @@ public Plugin myinfo =
 public void OnMapInit()
 {
 	PrintToServer("Modifying entities...");
-
+	bool doNeurotoxinFixes = false;//(GetCommandFlags("startserverneurotoxins") != INVALID_FCVAR_FLAGS);
 	int entitiesChangedOrDeleted = 0;
 	// add our point_servercommand since we will likely be needing it
 	EntityLump.Append();
@@ -46,6 +46,29 @@ public void OnMapInit()
 			classNameIndex = entry.GetNextKey("classname", classN, 64); // could've shifted when we erased globalname.
 			entitiesChangedOrDeleted++;
 			modifiedEntry = true;
+		}
+
+		// iterate through all keys and check for any startneurotoxin calls
+		if (doNeurotoxinFixes)
+		{
+			int keyLength = entry.Length;
+			for (int j = 0; j < keyLength; j++)
+			{
+				char keyBuffer[64];
+				char valueBuffer[128];
+				entry.Get(j, keyBuffer, 64, valueBuffer, 128);
+				if (StrContains(valueBuffer, "startneurotoxins ", true) != -1)
+				{
+					// get the entityName and then replace it with pmp_servercommand
+
+					// so explode string will only store the first one it finds
+					char entityName[1][128];
+					ExplodeString(valueBuffer, ",", entityName, 1, 128);
+					ReplaceStringEx(valueBuffer, 128, entityName[0], "pmp_servercommand", -1, -1, true);
+					ReplaceStringEx(valueBuffer, 128, "startneurotoxins ", "startserverneurotoxins ", -1, -1, true);
+					entry.Update(j, NULL_STRING, valueBuffer);
+				}
+			}
 		}
 
 		if (strcmp(classN, "point_bonusmaps_accessor") == 0)

@@ -1,2 +1,5 @@
 TODO:
-- Fix neurotoxin via creating a fake player if no player in slot 1 AND cancel the timer right before it actually goes off and then perform our OWN kill stuff.
+- Fix neurotoxin fake player being kicked when server goes into hibernation???
+- Fix neurotoxin fake player not getting networked
+- Disable elevator doors
+- Make players have a grace period where they don't collide with other players when they initially spawn

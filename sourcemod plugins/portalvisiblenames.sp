@@ -90,7 +90,10 @@ public void OnGameFrame()
 				SetHudTextParams(-1.0,0.55,0.2,255,255,255,255,0,0.2,0.0,0.0);
 				char playerName[33];
 				SetOrGetPortalName(playerName, portalIndex, false);
-				ShowHudText(i, 1, "%s's Portal", playerName);
+				if (strcmp(playerName, "") != 0)
+				{
+					ShowHudText(i, 1, "%s's Portal", playerName);
+				}
 				continue;
 			}
 			if (IsValidEntity(entIndex) && (entIndex <= MaxClients))

@@ -12,7 +12,7 @@ public Plugin myinfo =
 	name = "Portal 1 Portal Stealing",
 	author = "MTM101",
 	description = "Allows players to steal other player's portals.",
-	version = "0.0",
+	version = "1.0",
 	url = "https://github.com/benjaminpants/Portal1MultiplayerFixes"
 };
 

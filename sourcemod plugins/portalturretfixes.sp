@@ -86,7 +86,7 @@ public void RecalculateRocketTurretTarget(int entityId)
 		if (IsValidEntity(i))
 		{
 			float clientPos[3];
-			GetEntPropVector(i, Prop_Send, "m_vecOrigin", clientPos);
+			GetClientEyePosition(i, clientPos);
 
 			// unsure if this can be squared or not, investigate in the future.
 			float dist = GetVectorDistance(clientPos, turretPos, false);

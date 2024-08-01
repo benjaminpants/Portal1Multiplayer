@@ -261,8 +261,7 @@ public void OnMapInit()
 	// delete the specified outputs.
 	if (mt.JumpToKey("DeleteOutputs"))
 	{
-		mt.GotoFirstSubKey(false);
-		bool wentToNextKey = true;
+		bool wentToNextKey = mt.GotoFirstSubKey(false);
 		// todo: actually figure out what this code does to navigate the tree.
 		// i genuinely spent hours on figuring this out this sucked.
 		while (wentToNextKey)
@@ -276,6 +275,7 @@ public void OnMapInit()
 				PrintToServer("Couldn't find entity %s in DeleteOutputs. Skipping...", entTargetNameBuffer);
 				continue;
 			}
+			PrintToServer("delete %s", entTargetNameBuffer);
 			if (mt.GotoFirstSubKey(false))
 			{
 				bool browsedNextKey = true;
@@ -305,13 +305,12 @@ public void OnMapInit()
 			delete entLump; //we are done with it. carry on.
 			wentToNextKey = mt.GotoNextKey(false);
 		}
-		mt.GoBack();
-		mt.GoBack();
 	}
+	mt.Rewind();
+	mt.JumpToKey(mapName);
 	if (mt.JumpToKey("AddOutputs"))
 	{
-		mt.GotoFirstSubKey(false);
-		bool wentToNextKey = true;
+		bool wentToNextKey = mt.GotoFirstSubKey(false);
 		while (wentToNextKey)
 		{
 			char entTargetNameBuffer[255];
@@ -323,6 +322,7 @@ public void OnMapInit()
 				PrintToServer("Couldn't find entity %s in AddOutputs. Skipping...", entTargetNameBuffer);
 				continue;
 			}
+			PrintToServer("add %s", entTargetNameBuffer);
 			if (mt.GotoFirstSubKey(false))
 			{
 				bool browsedNextKey = true;
@@ -341,13 +341,12 @@ public void OnMapInit()
 			delete entLump; //we are done with it. carry on.
 			wentToNextKey = mt.GotoNextKey(false);
 		}
-		mt.GoBack();
-		mt.GoBack();
 	}
+	mt.Rewind();
+	mt.JumpToKey(mapName);
 	if (mt.JumpToKey("CreateSpawns"))
 	{
-		mt.GotoFirstSubKey(false);
-		bool wentToNextKey = true;
+		bool wentToNextKey = mt.GotoFirstSubKey(false);
 		while (wentToNextKey)
 		{
 			char entTargetNameBuffer[255];
@@ -359,6 +358,7 @@ public void OnMapInit()
 				PrintToServer("Couldn't find entity %s in CreateSpawns. Skipping...", entTargetNameBuffer);
 				continue;
 			}
+			PrintToServer("creates %s", entTargetNameBuffer);
 			// is this correct?
 			char originText[33];
 			mt.GetString("origin", originText, sizeof(originText));
@@ -375,9 +375,9 @@ public void OnMapInit()
 			delete entLump; //we are done with it. carry on.
 			wentToNextKey = mt.GotoNextKey(false);
 		}
-		mt.GoBack();
-		mt.GoBack();
 	}
+	mt.Rewind();
+	mt.JumpToKey(mapName);
 	delete mt;
 	PrintToServer("Performed %i manual changes!", entitiesChangedOrDeleted);
 }

@@ -4,4 +4,3 @@ TODO:
 - Make players have a grace period where they don't collide with other players when they initially spawn
 - finish implementing portalmapfixes.sp manual fixes (mostly finish implementing RequirePlayerTriggers)
 - add manual fixes for all official maps
-- fix parsing error when table is empty.

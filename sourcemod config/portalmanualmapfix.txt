@@ -93,9 +93,9 @@
 			{
 				"OnStartTouch" "a01-middleelevator_door_model_close,Trigger,,0,-1"
 			}
-			"~390575"
+			"trigger_elevator_ent_close_rm1_2"
 			{
-				"OnStartTouch" "a03-middle_elevator_door_model_close,Trigger,,0,-1"
+				"OnStartTouch" "a00-a01_elevator_door_model_close,Trigger,,0,-1"
 			}
 		}
 		"AddOutputs"
@@ -131,6 +131,10 @@
 			"~18755"
 			{
 				"OnStartTouch" "a02-a03_elevator_door_model_close,Trigger,,0,-1"
+			}
+			"~390575"
+			{
+				"OnStartTouch" "a03-middle_elevator_door_model_close,Trigger,,0,-1"
 			}
 		}
 		"AddOutputs"

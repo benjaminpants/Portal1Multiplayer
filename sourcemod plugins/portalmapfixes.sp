@@ -1,15 +1,29 @@
 #include <sdktools>
 #include <sourcemod>
 #include <entitylump>
+#include <keyvalues>
+#include <halflife>
 
 public Plugin myinfo =
 {
 	name = "Portal 1 Map Fixes",
 	author = "MTM101",
-	description = "Attempts to improve the playability of the campaign maps in multiplayer.",
+	description = "Attempts to improve the playability of the campaign maps in multiplayer via modifying entity lumps and special logic.",
 	version = "1.0",
 	url = "https://github.com/benjaminpants/Portal1MultiplayerFixes"
 };
+
+KeyValues LoadManualConfig()
+{
+	KeyValues keyValues = new KeyValues("MapCorrections");
+	if (keyValues.ImportFromFile("portalmanualmapfix.txt"))
+	{
+		return keyValues;
+	}
+	PrintToServer("Failed to read config keyvalues!");
+	delete keyValues;
+	return null;
+}
 
 public void OnMapInit()
 {
@@ -220,4 +234,185 @@ public void OnMapInit()
 	}
 
 	PrintToServer("Modified/Deleted %i entities!", entitiesChangedOrDeleted);
+
+	PrintToServer("Performing manual changes...");
+	KeyValues mt = LoadManualConfig();
+	if (mt == null) return;
+	entitiesChangedOrDeleted = 0;
+	char mapName[65];
+	GetCurrentMap(mapName,65);
+	if (!mt.JumpToKey(mapName))
+	{
+		delete mt;
+		PrintToServer("No manual changes for %s found.", mapName);
+		return;
+	}
+	// get the info_player_start that should be moved when a checkpoint is reached.
+	char startToNameBuffer[33];
+	mt.GetString("PlayerStartToMove", startToNameBuffer, 33);
+	EntityLumpEntry playerEntry = SearchForEntityInLump(startToNameBuffer, 33);
+	if (playerEntry != null)
+	{
+		PrintToServer("Found player lump! Adding key...");
+		playerEntry.Append("targetname", "portal_player_spawnpoint");
+		entitiesChangedOrDeleted++;
+		delete playerEntry;
+	}
+	// delete the specified outputs.
+	if (mt.JumpToKey("DeleteOutputs"))
+	{
+		mt.GotoFirstSubKey(false);
+		bool wentToNextKey = true;
+		// todo: actually figure out what this code does to navigate the tree.
+		// i genuinely spent hours on figuring this out this sucked.
+		while (wentToNextKey)
+		{
+			char entTargetNameBuffer[255];
+			mt.GetSectionName(entTargetNameBuffer, 255);
+			EntityLumpEntry entLump = SearchForEntityInLump(entTargetNameBuffer, 255);
+			if (entLump == null)
+			{
+				wentToNextKey = mt.GotoNextKey(false);
+				PrintToServer("Couldn't find entity %s in DeleteOutputs. Skipping...", entTargetNameBuffer);
+				continue;
+			}
+			if (mt.GotoFirstSubKey(false))
+			{
+				bool browsedNextKey = true;
+				while (browsedNextKey)
+				{
+					char outputKey[255]; // the output/key we will be scanning for
+					char targetOutput[255]; // the output value we are looking for
+					char outputValue[255]; // the value of the currently scanned output
+					mt.GetSectionName(outputKey, 255);
+					mt.GetString(NULL_STRING, targetOutput, sizeof(targetOutput));
+					int keyIndex = -1;
+					while ((keyIndex = entLump.GetNextKey(outputKey, outputValue, sizeof(outputValue), keyIndex)) != -1)
+					{
+						if (strcmp(outputValue, targetOutput) == 0)
+						{
+							//PrintToServer("Found target: %s! Deleting...", targetOutput);
+							entLump.Erase(keyIndex); // we have found our target, deleting...
+							keyIndex = -1;
+							break;
+						}
+					}
+					browsedNextKey = mt.GotoNextKey(false);
+				}
+				mt.GoBack();
+			}
+			entitiesChangedOrDeleted++;
+			delete entLump; //we are done with it. carry on.
+			wentToNextKey = mt.GotoNextKey(false);
+		}
+		mt.GoBack();
+		mt.GoBack();
+	}
+	if (mt.JumpToKey("AddOutputs"))
+	{
+		mt.GotoFirstSubKey(false);
+		bool wentToNextKey = true;
+		while (wentToNextKey)
+		{
+			char entTargetNameBuffer[255];
+			mt.GetSectionName(entTargetNameBuffer, 255);
+			EntityLumpEntry entLump = SearchForEntityInLump(entTargetNameBuffer, 255);
+			if (entLump == null)
+			{
+				wentToNextKey = mt.GotoNextKey(false);
+				PrintToServer("Couldn't find entity %s in AddOutputs. Skipping...", entTargetNameBuffer);
+				continue;
+			}
+			if (mt.GotoFirstSubKey(false))
+			{
+				bool browsedNextKey = true;
+				while (browsedNextKey)
+				{
+					char outputKey[255]; // the key we will be adding
+					char outputValue[255]; // the value we will be adding
+					mt.GetSectionName(outputKey, 255);
+					mt.GetString(NULL_STRING, outputValue, sizeof(outputValue));
+					entLump.Append(outputKey, outputValue);
+					browsedNextKey = mt.GotoNextKey(false);
+				}
+				mt.GoBack();
+			}
+			entitiesChangedOrDeleted++;
+			delete entLump; //we are done with it. carry on.
+			wentToNextKey = mt.GotoNextKey(false);
+		}
+		mt.GoBack();
+		mt.GoBack();
+	}
+	if (mt.JumpToKey("CreateSpawns"))
+	{
+		mt.GotoFirstSubKey(false);
+		bool wentToNextKey = true;
+		while (wentToNextKey)
+		{
+			char entTargetNameBuffer[255];
+			mt.GetSectionName(entTargetNameBuffer, 255);
+			EntityLumpEntry entLump = SearchForEntityInLump(entTargetNameBuffer, 255);
+			if (entLump == null)
+			{
+				wentToNextKey = mt.GotoNextKey(false);
+				PrintToServer("Couldn't find entity %s in CreateSpawns. Skipping...", entTargetNameBuffer);
+				continue;
+			}
+			// is this correct?
+			char originText[33];
+			mt.GetString("origin", originText, sizeof(originText));
+			char anglesText[33];
+			mt.GetString("angles", anglesText, sizeof(anglesText));
+			char targetOutput[33];
+			mt.GetString("output", targetOutput, sizeof(targetOutput));
+			char textBuffer[255];
+			Format(textBuffer, sizeof(textBuffer), "portal_player_spawnpoint,AddOutput,origin %s,0,1", originText);
+			entLump.Append(targetOutput, textBuffer);
+			Format(textBuffer, sizeof(textBuffer), "portal_player_spawnpoint,AddOutput,angles %s,0,1", anglesText);
+			entLump.Append(targetOutput, textBuffer);
+			entitiesChangedOrDeleted++;
+			delete entLump; //we are done with it. carry on.
+			wentToNextKey = mt.GotoNextKey(false);
+		}
+		mt.GoBack();
+		mt.GoBack();
+	}
+	delete mt;
+	PrintToServer("Performed %i manual changes!", entitiesChangedOrDeleted);
+}
+
+// implemented for manual changes to avoid the code getting stupidly messy.
+EntityLumpEntry SearchForEntityInLump(const char[] targetNameOrHammerId, int maxLength)
+{
+	int entLumpLength = EntityLump.Length();
+	char[] toSearchFor = new char[maxLength];
+	bool searchingForId = (targetNameOrHammerId[0] == '~');
+	char searchKey[12]; // the key to search for.
+	if (searchingForId)
+	{
+		// according to some weird thing i found on the wiki... this should cut off the first string
+		strcopy(toSearchFor, maxLength, targetNameOrHammerId[1]);
+		searchKey = "hammerid";
+	}
+	else
+	{
+		searchKey = "targetname";
+		strcopy(toSearchFor, maxLength, targetNameOrHammerId);
+	}
+	for (int i = 0; i < entLumpLength; i++)
+	{
+		EntityLumpEntry entry = EntityLump.Get(i);
+		char targetBuffer[128];
+		int targetIndex = entry.GetNextKey(searchKey, targetBuffer, 128);
+		if (targetIndex != -1)
+		{
+			if (strcmp(targetBuffer, toSearchFor) == 0)
+			{
+				return entry;
+			}
+		}
+		delete entry;
+	}
+	return null;
 }

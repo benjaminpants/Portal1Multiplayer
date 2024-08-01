@@ -1,0 +1,78 @@
+// put this file in the "portal" folder.
+// tip: pmp_servercommand is an entity that is added to every map when portalmapfixes.sp is on. Feel free to use it.
+"MapCorrections"
+{
+	"testchmb_a_00"
+	{
+		// the hammerid(or targetname?) of the info_player_start that will be moved for relocating spawns.
+		// technically any entity could be used here but since most already have a targetname it will likely break.
+		"PlayerStartToMove" "~359365"
+		
+		// determines which triggers on the map will have their outputs moved to a corresponding logic_relay and will require all players to reach before time runs out
+		// the time given is stored in seconds as the value.
+		// note that all required player triggers will be treated the same, so you should only use these in cases where one is accessible(primarily elevators)
+		// (todo)while in one of these triggers, players will not collide with other players.
+		// (todo)once activated all players that aren't in it already will be teleported to the triggers origin.
+		// despite being the first listed, this is processed last so that DeleteOutputs and AddOutputs can be processed.
+		// note that any output that isnt OnTrigger or OnStartTouch will not be caried over to the logic relay and will remain on the trigger.(if this is a problem, use DeleteOutputs)
+		"RequirePlayerTriggers"
+		{
+			"trigger_elevator_move" "15"
+			"a00-a01_trigger_elevator_move" "30"
+		}
+		// chooses specific outputs belonging to the specified targetname(or hammer id if its prefixed with ~) and deletes them.
+		// useful for preventing the closing of certain doors or other one time events that would prevent new player progression.
+		// these must be exactly as layed out in the BSP, so i suggest opening it up in a text editor and checking.
+		// tip: put the same key next to eachother in the file to avoid unnecessary look ups. and its cleaner.
+		"DeleteOutputs"
+		{
+			"trigger_door_close_rm1"
+			{
+				"OnStartTouch" "door_right_a00,Close,,0,-1"
+				"OnStartTouch" "door_left_a00,Close,,0,-1"
+				"OnStartTouch" "portal_red_0,Fizzle,,0,-1"
+				"OnStartTouch" "portal_blue_0,Fizzle,,0,-1"
+			}
+			"trigger_section2_start"
+			{
+				"OnStartTouch" "elevator_door_model_close,Trigger,,0,-1"
+			}
+			"~516093"
+			{
+				"OnStartTouch" "portal_cycle_timer,Disable,,0,-1"
+				"OnStartTouch" "portal_blue_2,Fizzle,,0,-1"
+			}
+			"~433713"
+			{
+				"OnStartTouch" "block_boxes,Enable,,0,-1"
+			}
+			"blackout"
+			{
+				"OnAnimationDone" "trigger_knockout_teleport,Enable,,0,-1"
+			}
+		}
+		
+		// adds the specified outputs to the entities with the specified target name(or hammer id)
+		// if you want to replace a value, add the original value to DeleteOutputs.
+		"AddOutputs"
+		{
+			"trigger_elevator_move"
+			{
+				"OnStartTouch" "portal_red_0,Fizzle,,0,-1"
+				"OnStartTouch" "portal_blue_0,Fizzle,,0,-1"
+			}
+		}
+		
+		// marks certain entities to move spawn to a certain location
+		"CreateSpawns"
+		{
+			"trigger_elevator_move"
+			{
+				"output" "OnTrigger"
+				"origin" "-1088 -784 705"
+				"angles" "0 90 0"
+				"teleportall" "false"
+			}
+		}
+	}
+}

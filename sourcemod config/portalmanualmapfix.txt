@@ -7,7 +7,7 @@
 		// the hammerid(or targetname?) of the info_player_start that will be moved for relocating spawns.
 		// technically any entity could be used here but since most already have a targetname it will likely break.
 		"PlayerStartToMove" "~359365"
-		
+
 		// determines which triggers on the map will have their outputs moved to a corresponding logic_relay and will require all players to reach before time runs out
 		// the time given is stored in seconds as the value.
 		// note that all required player triggers will be treated the same, so you should only use these in cases where one is accessible(primarily elevators)
@@ -23,7 +23,6 @@
 		// chooses specific outputs belonging to the specified targetname(or hammer id if its prefixed with ~) and deletes them.
 		// useful for preventing the closing of certain doors or other one time events that would prevent new player progression.
 		// these must be exactly as layed out in the BSP, so i suggest opening it up in a text editor and checking.
-		// tip: put the same key next to eachother in the file to avoid unnecessary look ups. and its cleaner.
 		"DeleteOutputs"
 		{
 			"trigger_door_close_rm1"

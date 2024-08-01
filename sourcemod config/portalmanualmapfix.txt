@@ -17,8 +17,8 @@
 		// note that any output that isnt OnTrigger or OnStartTouch will not be caried over to the logic relay and will remain on the trigger.(if this is a problem, use DeleteOutputs)
 		"RequirePlayerTriggers"
 		{
-			"trigger_elevator_move" "15"
-			"a00-a01_trigger_elevator_move" "30"
+			"trigger_elevator_move" "10"
+			"a00-a01_trigger_elevator_move" "10"
 		}
 		// chooses specific outputs belonging to the specified targetname(or hammer id if its prefixed with ~) and deletes them.
 		// useful for preventing the closing of certain doors or other one time events that would prevent new player progression.
@@ -70,6 +70,80 @@
 				"output" "OnTrigger"
 				"origin" "-1088 -784 705"
 				"angles" "0 90 0"
+				"teleportall" "false"
+			}
+		}
+	}
+
+	// the below doesnt work due to AddOutputs being empty due to a parsing bug
+	"testchmb_a_01"
+	{
+		
+		"PlayerStartToMove" "~2438"
+		
+		"RequirePlayerTriggers"
+		{
+			"a01-middletrigger_elevator_move" "10"
+			"a03-a04_trigger_elevator_move" "10"
+		}
+		
+		"DeleteOutputs"
+		{
+			"trigger_section2_start"
+			{
+				"OnStartTouch" "a01-middleelevator_door_model_close,Trigger,,0,-1"
+			}
+			"~390575"
+			{
+				"OnStartTouch" "a03-middle_elevator_door_model_close,Trigger,,0,-1"
+			}
+		}
+		"AddOutputs"
+		{
+			
+		}
+
+		"CreateSpawns"
+		{
+			"a01-middletrigger_elevator_move"
+			{
+				"output" "OnTrigger"
+				"origin" "-256 -160 616"
+				"angles" "0 90 0"
+				"teleportall" "false"
+			}
+		}
+	}
+
+	"testchmb_a_02"
+	{
+		
+		"PlayerStartToMove" "~2438"
+		
+		"RequirePlayerTriggers"
+		{
+			"a03-middle_trigger_elevator_move" "10"
+			"a01-a02_trigger_elevator_move" "10"
+		}
+		
+		"DeleteOutputs"
+		{
+			"~18755"
+			{
+				"OnStartTouch" "a02-a03_elevator_door_model_close,Trigger,,0,-1"
+			}
+		}
+		"AddOutputs"
+		{
+			
+		}
+		"CreateSpawns"
+		{
+			"a03-middle_trigger_elevator_move"
+			{
+				"output" "OnTrigger"
+				"origin" "528 0 1384"
+				"angles" "0 180 0"
 				"teleportall" "false"
 			}
 		}

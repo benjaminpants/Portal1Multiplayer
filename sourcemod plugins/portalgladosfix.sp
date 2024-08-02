@@ -32,7 +32,7 @@ public Action UpdateDummyGLaDOS(Handle timer)
 {
 	for (int i = 1; i <= MaxClients; i++)
 	{
-		if (IsValidEntity(i) && IsValidEntity(g_playerGLaDOSMap[i]))
+		if (IsValidEntity(i) && IsValidEntity(g_playerGLaDOSMap[i - 1]))
 		{
 			new Float:position[3];
 			GetEntPropVector(i, Prop_Send, "m_vecOrigin", position);

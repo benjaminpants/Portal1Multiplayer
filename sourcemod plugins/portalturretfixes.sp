@@ -86,11 +86,11 @@ public void RecalculateRocketTurretTarget(int entityId)
 		if (IsValidEntity(i))
 		{
 			float clientPos[3];
-			GetClientEyePosition(i, clientPos);
+			GetClientAbsOrigin(i, clientPos);
 
 			// unsure if this can be squared or not, investigate in the future.
 			float dist = GetVectorDistance(clientPos, turretPos, false);
-			if (dist < smallestDist)
+			if (dist <= smallestDist)
 			{
 				smallestDist = dist;
 				foundClient = i;

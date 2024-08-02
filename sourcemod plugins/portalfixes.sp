@@ -383,7 +383,7 @@ Action ChangePortalGunLinkageAndFirePortal(Handle timer, DataPack pack)
 void GivePlayerPortalGun(int client)
 {
 	int entityId = GivePlayerItem(client, "weapon_portalgun");
-	if (entityId != -1)
+	if (IsValidEntity(entityId))
 	{
 		// we remove these fields from the portal gun so that there isn't an inbetween time for the player to fire a portal before their linkageID gets set
 		// (yes, this is something that has genuinely happened during testing)
@@ -398,7 +398,7 @@ void GivePlayerPortalGun(int client)
 	}
 	else
 	{
-		PrintToServer("CreateEntityByName returned -1...");
+		PrintToServer("GivePlayerItem failed... %i", client);
 	}
 }
 
@@ -411,7 +411,7 @@ void ClearAllBadPortalGuns()
 		if (IsValidEntity(ent)) 
 		{
 			int entOwner = GetEntPropEnt(ent, Prop_Data, "m_hOwner");
-			if (entOwner == -1)
+			if (!IsValidEntity(entOwner))
 			{
 				if (!gcv_portalGunAutomatic.BoolValue)
 				{

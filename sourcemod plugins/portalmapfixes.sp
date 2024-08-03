@@ -383,6 +383,9 @@ public void OnMapInit()
 			Format(textBuffer, sizeof(textBuffer), "portal_player_spawnpoint,AddOutput,angles %s,0,1", anglesText);
 			entLump.Append(targetOutput, textBuffer);
 			entitiesChangedOrDeleted++;
+			#if DEBUG_VERBOUS
+				PrintToServer("Added spawn (%s, %s) to %s on %s.",originText,anglesText,entTargetNameBuffer, targetOutput);
+			#endif
 			delete entLump; //we are done with it. carry on.
 			wentToNextKey = mt.GotoNextKey(false);
 		}

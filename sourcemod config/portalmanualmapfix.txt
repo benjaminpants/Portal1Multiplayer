@@ -117,23 +117,23 @@
 	"testchmb_a_02"
 	{
 		
-		"PlayerStartToMove" "~2438"
+		"PlayerStartToMove" "~2727"
 		
 		"RequirePlayerTriggers"
 		{
-			"a03-middle_trigger_elevator_move" "10"
-			"a01-a02_trigger_elevator_move" "10"
+			"a02-middle_trigger_elevator_move" "10"
+			"a02-a03_trigger_elevator_move" "10"
 		}
 		
 		"DeleteOutputs"
 		{
-			"~18755"
+			"trigger_elevator_ent_close_a01_02"
 			{
-				"OnStartTouch" "a02-a03_elevator_door_model_close,Trigger,,0,-1"
+				"OnStartTouch" "a01-a02_elevator_door_model_close,Trigger,,0,-1"
 			}
-			"~390575"
+			"~194398"
 			{
-				"OnStartTouch" "a03-middle_elevator_door_model_close,Trigger,,0,-1"
+				"OnStartTouch" "a02-middle_elevator_door_model_close,Trigger,,0,-1"
 			}
 		}
 		"AddOutputs"
@@ -142,10 +142,10 @@
 		}
 		"CreateSpawns"
 		{
-			"a03-middle_trigger_elevator_move"
+			"a02-middle_trigger_elevator_move"
 			{
-				"output" "OnTrigger"
-				"origin" "528 0 1384"
+				"output" "OnStartTouch"
+				"origin" "666 197 613"
 				"angles" "0 180 0"
 				"teleportall" "false"
 			}

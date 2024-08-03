@@ -13,6 +13,8 @@ public Plugin myinfo =
 	url = "https://github.com/benjaminpants/Portal1MultiplayerFixes"
 };
 
+#define DEBUG_VERBOUS true
+
 KeyValues LoadManualConfig()
 {
 	KeyValues keyValues = new KeyValues("MapCorrections");
@@ -121,6 +123,7 @@ public void OnMapInit()
 			continue;
 		}
 
+		// detect change levels via path tracks, as that is when the game does auto detection.
 		if (strcmp(classN, "path_track") == 0)
 		{
 			char outputString[256];
@@ -148,6 +151,7 @@ public void OnMapInit()
 							int levelNameIndex = subEntry.GetNextKey("map",changeLevelName, 64);
 							if (levelNameIndex == -1)
 							{
+								PrintToServer("Error! Couldn't find map key for level transition!");
 								subTargetName = "testchmb_a_00";
 							}
 							break;
@@ -275,7 +279,6 @@ public void OnMapInit()
 				PrintToServer("Couldn't find entity %s in DeleteOutputs. Skipping...", entTargetNameBuffer);
 				continue;
 			}
-			PrintToServer("delete %s", entTargetNameBuffer);
 			if (mt.GotoFirstSubKey(false))
 			{
 				bool browsedNextKey = true;
@@ -287,15 +290,22 @@ public void OnMapInit()
 					mt.GetSectionName(outputKey, 255);
 					mt.GetString(NULL_STRING, targetOutput, sizeof(targetOutput));
 					int keyIndex = -1;
+					bool foundValue = false;
 					while ((keyIndex = entLump.GetNextKey(outputKey, outputValue, sizeof(outputValue), keyIndex)) != -1)
 					{
 						if (strcmp(outputValue, targetOutput) == 0)
 						{
-							//PrintToServer("Found target: %s! Deleting...", targetOutput);
+							#if DEBUG_VERBOUS
+								PrintToServer("Found target: \"%s\" \"%s\"! (%s) Deleting...", outputKey, targetOutput, entTargetNameBuffer);
+							#endif
 							entLump.Erase(keyIndex); // we have found our target, deleting...
-							keyIndex = -1;
+							foundValue = true;
 							break;
 						}
+					}
+					if (!foundValue)
+					{
+						PrintToServer("Couldn't remove \"%s\", \"%s\" in %s! (Not found)", outputKey, targetOutput, entTargetNameBuffer);
 					}
 					browsedNextKey = mt.GotoNextKey(false);
 				}
@@ -322,7 +332,6 @@ public void OnMapInit()
 				PrintToServer("Couldn't find entity %s in AddOutputs. Skipping...", entTargetNameBuffer);
 				continue;
 			}
-			PrintToServer("add %s", entTargetNameBuffer);
 			if (mt.GotoFirstSubKey(false))
 			{
 				bool browsedNextKey = true;
@@ -333,6 +342,9 @@ public void OnMapInit()
 					mt.GetSectionName(outputKey, 255);
 					mt.GetString(NULL_STRING, outputValue, sizeof(outputValue));
 					entLump.Append(outputKey, outputValue);
+					#if DEBUG_VERBOUS
+						PrintToServer("Added \"%s\" \"%s\" to %s!", outputKey, outputValue, entTargetNameBuffer);
+					#endif
 					browsedNextKey = mt.GotoNextKey(false);
 				}
 				mt.GoBack();
@@ -358,7 +370,6 @@ public void OnMapInit()
 				PrintToServer("Couldn't find entity %s in CreateSpawns. Skipping...", entTargetNameBuffer);
 				continue;
 			}
-			PrintToServer("creates %s", entTargetNameBuffer);
 			// is this correct?
 			char originText[33];
 			mt.GetString("origin", originText, sizeof(originText));

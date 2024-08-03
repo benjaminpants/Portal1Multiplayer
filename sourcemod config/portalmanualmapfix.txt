@@ -75,7 +75,6 @@
 		}
 	}
 
-	// the below doesnt work due to AddOutputs being empty due to a parsing bug
 	"testchmb_a_01"
 	{
 		

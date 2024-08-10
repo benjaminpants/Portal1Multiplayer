@@ -50,6 +50,28 @@ public void OnPluginStart()
 	
 	gcv_portalGunAutomaticAnnounce = CreateConVar("sv_announceportalgunpickup", "1", "If sv_portalgun_auto is on, this makes it so that the person who picked up the ASHPD gets announced in chat..");
 	HookEntityOutput("weapon_portalgun", "OnPlayerPickup", OnPortalGunPickup);
+	HookEntityOutput("trigger_portal_cleanser", "OnFizzle", OnCleanserFizzle);
+}
+
+void OnCleanserFizzle(const char[] output, int caller, int activator, float delay)
+{
+	if (!IsValidEntity(activator))
+	{
+		return;
+	}
+
+	int entities[2];
+	GetPortalsBelongingToClient(activator, entities);
+	if (IsValidEntity(entities[0]))
+	{
+		SetVariantBool(false);
+		AcceptEntityInput(entities[0], "SetActivatedState");
+	}
+	if (IsValidEntity(entities[1]))
+	{
+		SetVariantBool(false);
+		AcceptEntityInput(entities[1], "SetActivatedState");
+	}
 }
 
 void OnPortalGunPickup(const char[] output, int caller, int activator, float delay)
@@ -58,7 +80,7 @@ void OnPortalGunPickup(const char[] output, int caller, int activator, float del
 	{
 		return;
 	}
-	if (activator == -1)
+	if (!IsValidEntity(activator))
 	{
 		return;
 	}
@@ -73,7 +95,6 @@ void OnPortalGunPickup(const char[] output, int caller, int activator, float del
 	if (strcmp(targetN, "") == 0)
 	{
 		int entHammerId = GetEntProp(caller, Prop_Data, "m_iHammerID");
-		PrintToServer("Blank target name! performing backup check!", targetN);
 		if (entHammerId <= 0)
 		{
 			return;
@@ -187,6 +208,8 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 	{
 		SetEntProp(client, Prop_Data, "m_bWearingSuit", false);
 	}
+	SetVariantFloat(99999999999999.0);
+	AcceptEntityInput(client, "IgnoreFallDamageWithoutReset");
 	ClearAllBadPortalGuns();
 	
 	if (g_giveGun)

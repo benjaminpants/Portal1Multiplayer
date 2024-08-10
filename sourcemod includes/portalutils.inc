@@ -130,6 +130,29 @@ stock void FizzlePortal(int portalId)
 	AcceptEntityInput(portalId, "Fizzle");
 }
 
+stock void GetPortalsBelongingToClient(int client, int[] entIds)
+{
+	entIds[0] = -1;
+	entIds[1] = -1;
+	int portalGun = GetClientPortalGun(client);
+	if (!IsValidEntity(portalGun))
+	{
+		return;
+	}
+	int linkId = GetEntProp(portalGun, Prop_Data, "m_iPortalLinkageGroupID");
+	
+	FindAllPortalsOfLinkageID(linkId, entIds);
+
+	if (!(IsValidEntity(entIds[0]) && (GetEntProp(portalGun, Prop_Send, "m_bCanFirePortal1") == 1)))
+	{
+		entIds[0] = -1;
+	}
+	if (!(IsValidEntity(entIds[1]) && (GetEntProp(portalGun, Prop_Send, "m_bCanFirePortal2") == 1)))
+	{
+		entIds[1] = -1;
+	}
+}
+
 // find the two portals that belong to the specified client's linkage id and if everyone who belongs to said linkageID is dead, fizzle the portals
 stock void FizzlePortalsBelongingToClient(int client, bool[] fizzled)
 {

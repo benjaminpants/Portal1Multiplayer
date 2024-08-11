@@ -1,6 +1,7 @@
 #include <sdktools>
 #include <sourcemod>
 #include <entitylump>
+#include <dhooks>
 #include <portalutils>
 
 public Plugin myinfo =
@@ -30,6 +31,8 @@ ConVar gcv_portalFizzleOnDeath; // sv_portals_fizzle_on_death
 ConVar gcv_portalGunAutomatic; // sv_portalgun_auto
 ConVar gcv_portalGunAutomaticAnnounce;// sv_announceportalgunpickup
 
+Handle g_hFlPlayerFallDamage;
+
 public void OnPluginStart()
 {
 	RegServerCmd("refresh_player_portalguns", Command_RefreshPlayerPortalGuns, "Resets the portal guns of all players to match the current settings.");
@@ -51,6 +54,29 @@ public void OnPluginStart()
 	gcv_portalGunAutomaticAnnounce = CreateConVar("sv_announceportalgunpickup", "1", "If sv_portalgun_auto is on, this makes it so that the person who picked up the ASHPD gets announced in chat..");
 	HookEntityOutput("weapon_portalgun", "OnPlayerPickup", OnPortalGunPickup);
 	HookEntityOutput("trigger_portal_cleanser", "OnFizzle", OnCleanserFizzle);
+	
+	// CGameRules::FlPlayerFallDamage( CBasePlayer * )
+	g_hFlPlayerFallDamage = DHookCreate( 61, HookType_GameRules, ReturnType_Float, ThisPointer_Ignore );
+	DHookAddParam( g_hFlPlayerFallDamage, HookParamType_CBaseEntity );
+	
+	if( g_hFlPlayerFallDamage == INVALID_HANDLE )
+	{
+		PrintToServer( "Failed to DHook CGameRules::FlPlayerFallDamage\n" );
+	}
+}
+
+public void OnMapStart()
+{	
+	DHookGamerules( g_hFlPlayerFallDamage, true, INVALID_FUNCTION, Hook_FlPlayerFallDamage );
+}
+
+
+public MRESReturn Hook_FlPlayerFallDamage( DHookReturn hReturn )
+{
+	PrintToServer( "Fall Damage!\n" );
+	hReturn.Value = 0.0;	
+	
+	return MRES_Supercede;
 }
 
 void OnCleanserFizzle(const char[] output, int caller, int activator, float delay)
@@ -208,8 +234,7 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 	{
 		SetEntProp(client, Prop_Data, "m_bWearingSuit", false);
 	}
-	SetVariantFloat(99999999999999.0);
-	AcceptEntityInput(client, "IgnoreFallDamageWithoutReset");
+	
 	ClearAllBadPortalGuns();
 	
 	if (g_giveGun)

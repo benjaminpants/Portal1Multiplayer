@@ -55,25 +55,23 @@ public void OnPluginStart()
 	HookEntityOutput("weapon_portalgun", "OnPlayerPickup", OnPortalGunPickup);
 	HookEntityOutput("trigger_portal_cleanser", "OnFizzle", OnCleanserFizzle);
 	
-	// CGameRules::FlPlayerFallDamage( CBasePlayer * )
-	g_hFlPlayerFallDamage = DHookCreate( 61, HookType_GameRules, ReturnType_Float, ThisPointer_Ignore );
-	DHookAddParam( g_hFlPlayerFallDamage, HookParamType_CBaseEntity );
+	g_hFlPlayerFallDamage = DHookCreate(61, HookType_GameRules, ReturnType_Float, ThisPointer_Ignore);
+	DHookAddParam(g_hFlPlayerFallDamage, HookParamType_CBaseEntity);
 	
-	if( g_hFlPlayerFallDamage == INVALID_HANDLE )
+	if(g_hFlPlayerFallDamage == INVALID_HANDLE)
 	{
-		PrintToServer( "Failed to DHook CGameRules::FlPlayerFallDamage\n" );
+		PrintToServer("Failed to DHook CGameRules::FlPlayerFallDamage\n");
 	}
 }
 
 public void OnMapStart()
 {	
-	DHookGamerules( g_hFlPlayerFallDamage, true, INVALID_FUNCTION, Hook_FlPlayerFallDamage );
+	DHookGamerules(g_hFlPlayerFallDamage, true, INVALID_FUNCTION, Hook_FlPlayerFallDamage);
 }
 
 
-public MRESReturn Hook_FlPlayerFallDamage( DHookReturn hReturn )
+public MRESReturn Hook_FlPlayerFallDamage(DHookReturn hReturn)
 {
-	PrintToServer( "Fall Damage!\n" );
 	hReturn.Value = 0.0;	
 	
 	return MRES_Supercede;

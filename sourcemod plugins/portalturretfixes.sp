@@ -31,7 +31,6 @@ public void OnMapStart()
 
 // inject the appropiate logic_timer and ai_relationship entities into the entity lump
 // as spawning them in OnMapStart appears to not really work.
-// TODO: figure out a better solution.
 public void OnMapInit()
 {
 	EntityLump.Append();

@@ -8,7 +8,7 @@ public Plugin myinfo =
 {
 	name = "Portal 1 Portal Velocity Fix",
 	author = "MTM101",
-	description = "Massively improves the consistency of Portals in Portal 1 multiplayer.",
+	description = "Reimplements the portal velocity code so it works in multiplayer.",
 	version = "1.0",
 	url = "https://github.com/benjaminpants/Portal1MultiplayerFixes"
 };
@@ -38,7 +38,7 @@ public Action Event_PlayerPortalled(UserMsg msg_id, BfRead msg, const int[] play
 
 	int linkedPortal = GetEntPropEnt(portal, Prop_Data, "m_hLinkedPortal");
 	
-	// this entity is not a player so ignore it.
+	// this entity is not a player so ignore it. (prop_physics with portals work fine)
 	if (entity > MaxClients)
 	{
 		return;

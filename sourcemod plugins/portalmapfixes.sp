@@ -175,7 +175,6 @@ public void OnMapInit()
 		}
 
 		// replace prop_portal_stats_display's with prop_dynamics, as when prop_portal_stats_displays are activated the server WILL crash
-		// TODO: ignore prop_portal_stats_display's with no inputs going into them as those dont crash the game. (and for some reason certain prop_portal_stats_display's dont work when turned into prop_dynamics...)
 		if (strcmp(classN, "prop_portal_stats_display") == 0)
 		{
 			entry.Update(classNameIndex, NULL_STRING, "prop_dynamic");

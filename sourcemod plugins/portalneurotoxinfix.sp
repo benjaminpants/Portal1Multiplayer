@@ -3,13 +3,15 @@
 #include <sourcemod>
 #include <halflife>
 
+// THIS PLUGIN IS NOT COMPLETE. I ADVICE AGAINST USING IT UNLESS YOU KNOW WHAT YOU ARE DOING!
+
 
 public Plugin myinfo =
 {
 	name = "Portal 1 Neurotoxin Fix",
 	author = "MTM101",
 	description = "Creates a startserverneurotoxins command that can be used to all",
-	version = "1.0",
+	version = "0.0",
 	url = "https://github.com/benjaminpants/Portal1MultiplayerFixes"
 };
 

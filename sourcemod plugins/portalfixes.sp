@@ -13,9 +13,6 @@ public Plugin myinfo =
 	url = "https://github.com/benjaminpants/Portal1MultiplayerFixes"
 };
 
-// TODO: delete portal_ragdoll when created so we dont shit ourselves when the player commits suicide.
-
-
 // due to the automatic setting being removed/not working, unsure if having these all as globals is still a good idea.
 bool g_giveGun = true;
 bool g_canFirePortal1 = true;
@@ -77,6 +74,7 @@ public MRESReturn Hook_FlPlayerFallDamage(DHookReturn hReturn)
 	return MRES_Supercede;
 }
 
+// De-activate portals so that the fizzler doesn't continually refizzle portals every frame.
 void OnCleanserFizzle(const char[] output, int caller, int activator, float delay)
 {
 	if (!IsValidEntity(activator))
@@ -481,7 +479,7 @@ void ClearAllBadPortalGuns()
 public void OnMapInit()
 {
 	if (!gcv_portalGunAutomatic.BoolValue) return;
-	PrintToServer("Doing automatic gun changes!");
+	PrintToServer("Peforming automatic gun detection...");
 	
 	EntityLumpEntry portalGunLump;
 	
@@ -541,7 +539,7 @@ public void OnMapInit()
 					delete subEntry;
 					continue;
 				}
-				// change the original point_template target name so that IO breaks and it doesnt spawn and cause the player to get stuck
+				// change the original target name of the point_template's template so that IO breaks so it doesnt spawn and cause the player to get stuck
 				int rootTargetNameIndex = entry.FindKey("targetname");
 				entry.Update(rootTargetNameIndex, NULL_STRING, "vanillaportalguntemplate");
 				portalGunLump = EntityLump.Get(j);
@@ -551,9 +549,6 @@ public void OnMapInit()
 		}
 		delete entry;
 	}
-
-	// TODO: add backup search if the portal gun lump is null to scan for portal guns near info_player_starts.
-	// so that maps like portal_playground_v4 dont need to have automatic portal guns turned off to behave properly
 	
 	if (portalGunLump != null)
 	{

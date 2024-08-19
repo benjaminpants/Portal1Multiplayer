@@ -13,7 +13,62 @@ public Plugin myinfo =
 	url = "https://github.com/benjaminpants/Portal1MultiplayerFixes"
 };
 
+int g_triggerIds[8];
+char g_triggerNames[8][33];
+bool g_triggersActivated[8];
+int g_triggerTimes[8];
+int g_triggerTotal = 0;
+
+int g_currentTriggerIndex = -1;
+int g_currentTriggerEnt = -1;
+int g_currentTriggerCount = 0;
+int g_previousTriggerCount = 0;
+Handle g_currentTriggerTimer = INVALID_HANDLE;
+
 #define DEBUG_VERBOUS true
+
+public void OnPluginStart()
+{
+	HookEntityOutput("game_zone_player", "OnPlayerInZone", OnPlayerInZone);
+}
+
+void OnPlayerInZone(const char[] output, int caller, int activator, float delay)
+{
+	if (!IsValidEntity(activator))
+	{
+		return;
+	}
+	if (!IsValidEntity(caller))
+	{
+		return;
+	}
+	// todo: put alive checks
+	int entHammerId = GetEntProp(caller, Prop_Data, "m_iHammerID");
+	for (int i = 0; i < g_triggerTotal; i++)
+	{
+		if (g_triggerIds[i] == entHammerId)
+		{
+			g_currentTriggerIndex = i;
+			g_currentTriggerEnt = caller;
+			break;
+		}
+	}
+	g_currentTriggerCount++;
+}
+
+void ResetAllPlayerTriggers()
+{
+	g_currentTriggerEnt = -1;
+	g_currentTriggerIndex = -1;
+	g_currentTriggerCount = 0;
+	g_previousTriggerCount = 0;
+	if (g_currentTriggerTimer != INVALID_HANDLE)
+	{
+		KillTimer(g_currentTriggerTimer, false);
+	}
+	g_currentTriggerTimer = INVALID_HANDLE;
+}
+
 
 KeyValues LoadManualConfig()
 {
@@ -29,6 +84,15 @@ KeyValues LoadManualConfig()
 
 public void OnMapInit()
 {
+	g_triggerTotal = 0;
+	g_triggersActivated[0] = false;
+	g_triggersActivated[1] = false;
+	g_triggersActivated[2] = false;
+	g_triggersActivated[3] = false;
+	g_triggersActivated[4] = false;
+	g_triggersActivated[5] = false;
+	g_triggersActivated[6] = false;
+	g_triggersActivated[7] = false;
 	PrintToServer("Modifying entities...");
 	bool doNeurotoxinFixes = false;//(GetCommandFlags("startserverneurotoxins") != INVALID_FCVAR_FLAGS);
 	int entitiesChangedOrDeleted = 0;
@@ -391,6 +455,77 @@ public void OnMapInit()
 	}
 	mt.Rewind();
 	mt.JumpToKey(mapName);
+	if (mt.JumpToKey("RequirePlayerTriggers"))
+	{
+		bool wentToNextKey = mt.GotoFirstSubKey(false);
+		while (wentToNextKey)
+		{
+			char entTargetNameBuffer[255];
+			mt.GetSectionName(entTargetNameBuffer, 255);
+			EntityLumpEntry entLump = SearchForEntityInLump(entTargetNameBuffer, 255);
+			if (entLump == null)
+			{
+				wentToNextKey = mt.GotoNextKey(false);
+				PrintToServer("Couldn't find entity %s in RequirePlayerTriggers. Skipping...", entTargetNameBuffer);
+				continue;
+			}
+			char classN[64];
+			int classNameIndex = entLump.GetNextKey("classname", classN, 64);
+			if (classNameIndex == -1)
+			{
+				delete entLump;
+				PrintToServer("Target for RequirePlayerTriggers has no classname? Skipping...", entTargetNameBuffer);
+				continue;
+			}
+			entLump.Update(classNameIndex, NULL_STRING, "game_zone_player");
+			char zoneName[33];
+			mt.GetString("Name", zoneName, sizeof(zoneName));
+			int timeDelay = mt.GetNum("WaitTime");
+			int teleportAll = mt.GetNum("TeleportAll");
+
+			// create the logic_relay
+			int lumpIndex = EntityLump.Append();
+			EntityLumpEntry logicLump = EntityLump.Get(lumpIndex);
+			logicLump.Append("classname", "logic_relay");
+			char hammerIdBuffer[128];
+			char outputBuffer[256];
+			char relayNameBuffer[256]
+			int hammerIdIndex = entLump.GetNextKey("hammerid", hammerIdBuffer, 128);
+			if (hammerIdIndex == -1)
+			{
+				delete entLump;
+				PrintToServer("Target for RequirePlayerTriggers has no hammerid? Skipping...", entTargetNameBuffer);
+				continue;
+			}
+			Format(relayNameBuffer, 256, "relay_%s", hammerIdBuffer);
+			// relayNameBuffer should contain something like "relay_hammerid" where hammerid is the hammerid
+			// we add a target name to our logic_relay so that we can easily track it down later
+			logicLump.Append("targetname", relayNameBuffer);
+			int outputIndex = -1;
+			while ((outputIndex = entLump.GetNextKey("OnStartTouch", outputBuffer, 256, outputIndex)) != -1)
+			{
+				logicLump.Append("OnTrigger", outputBuffer);
+			}
+			outputIndex = -1;
+			while ((outputIndex = entLump.GetNextKey("OnTrigger", outputBuffer, 256, outputIndex)) != -1)
+			{
+				logicLump.Append("OnTrigger", outputBuffer);
+			}
+			outputIndex = -1;
+			while ((outputIndex = entLump.GetNextKey("OnStartTouchAll", outputBuffer, 256, outputIndex)) != -1)
+			{
+				logicLump.Append("OnTrigger", outputBuffer);
+			}
+
+			g_triggerTimes[g_triggerTotal] = timeDelay;
+			g_triggerIds[g_triggerTotal] = StringToInt(hammerIdBuffer);
+			g_triggerNames[g_triggerTotal] = zoneName;
+			g_triggerTotal++;
+			entitiesChangedOrDeleted++;
+			delete entLump; //we are done with it. carry on.
+			wentToNextKey = mt.GotoNextKey(false);
+		}
+	}
 	delete mt;
 	PrintToServer("Performed %i manual changes!", entitiesChangedOrDeleted);
 }
@@ -404,7 +539,7 @@ EntityLumpEntry SearchForEntityInLump(const char[] targetNameOrHammerId, int max
 	char searchKey[12]; // the key to search for.
 	if (searchingForId)
 	{
-		// according to some weird thing i found on the wiki... this should cut off the first string
+		// according to some weird thing i found on the wiki... this should cut off the first character
 		strcopy(toSearchFor, maxLength, targetNameOrHammerId[1]);
 		searchKey = "hammerid";
 	}
@@ -428,4 +563,85 @@ EntityLumpEntry SearchForEntityInLump(const char[] targetNameOrHammerId, int max
 		delete entry;
 	}
 	return null;
+}
+
+public void OnMapStart()
+{
+	CreateTimer(0.1, CheckTrigger, 0, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+}
+
+public void OnMapEnd()
+{
+	ResetAllPlayerTriggers();
+}
+
+Action TimerExpire(Handle timer, int hammerId)
+{
+	g_currentTriggerCount = 0;
+	g_previousTriggerCount = 0;
+	// todo: timer expire logic...
+	//PrintToServer("Timer done! %i, %i, %i", g_currentTriggerEnt, hammerId, g_currentTriggerIndex);
+	AcceptEntityInput(g_currentTriggerEnt, "Kill"); //get rid of it so it cant fire again.
+	char targetName[128];
+	Format(targetName, 128, "relay_%i", hammerId);
+	int ent = -1;
+	while((ent = FindEntityByClassname(ent, "logic_relay")) != -1) 
+	{
+		if (IsValidEntity(ent)) 
+		{
+			char relayName[128];
+			GetEntPropString(ent, Prop_Data, "m_iName", relayName, 128);
+			if (strcmp(relayName, targetName) == 0)
+			{
+				AcceptEntityInput(ent, "Trigger");
+				//PrintToServer("Found relay!");
+				break;
+			}
+		}
+	}
+	g_triggersActivated[g_currentTriggerIndex] = true;
+	ResetAllPlayerTriggers();
+}
+
+Action CheckTrigger(Handle timer)
+{
+	// we are checking here because it will take at least a tick for the outputs to fire(i think) so doing it next time we check is the most convient way of doing it
+	// there were players last time we checked
+	if ((g_currentTriggerIndex != -1) && (!g_triggersActivated[g_currentTriggerIndex]))
+	{
+		if (g_currentTriggerCount > 0)
+		{
+			if ((g_currentTriggerTimer == INVALID_HANDLE))
+			{
+				PrintToChatAll("A player has reached the %s! Proceeding in %i seconds...", g_triggerNames[g_currentTriggerIndex], g_triggerTimes[g_currentTriggerIndex]);
+				g_currentTriggerTimer = CreateTimer(float(g_triggerTimes[g_currentTriggerIndex]), TimerExpire, g_triggerIds[g_currentTriggerIndex], 0);
+			}
+			else
+			{
+				if (g_currentTriggerCount == GetClientCount(false))
+				{
+					PrintToChatAll("All players have reached the %s! Proceeding...", g_triggerNames[g_currentTriggerIndex]);
+					TriggerTimer(g_currentTriggerTimer, false);
+				}
+			}
+		}
+		else
+		{
+			if ((g_currentTriggerTimer != INVALID_HANDLE))
+			{
+				PrintToChatAll("All players have left the %s! Cancelling...", g_triggerNames[g_currentTriggerIndex]);
+				ResetAllPlayerTriggers();
+			}
+		}
+	}
+	g_previousTriggerCount = g_currentTriggerCount;
+	g_currentTriggerCount = 0;
+	int ent = -1;
+	while((ent = FindEntityByClassname(ent, "game_zone_player")) != -1) 
+	{
+		if (IsValidEntity(ent)) 
+		{
+			AcceptEntityInput(ent, "CountPlayersInZone");
+		}
+	}
 }

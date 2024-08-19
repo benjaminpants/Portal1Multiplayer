@@ -17,8 +17,18 @@
 		// note that any output that isnt OnTrigger or OnStartTouch will not be caried over to the logic relay and will remain on the trigger.(if this is a problem, use DeleteOutputs)
 		"RequirePlayerTriggers"
 		{
-			"trigger_elevator_move" "10"
-			"a00-a01_trigger_elevator_move" "10"
+			"trigger_elevator_move"
+			{
+				"WaitTime" "10"
+				"TeleportAll" "1"
+				"Name" "elevator"
+			}
+			"a00-a01_trigger_elevator_move"
+			{
+				"WaitTime" "10"
+				"TeleportAll" "1"
+				"Name" "elevator"
+			}
 		}
 		// chooses specific outputs belonging to the specified targetname(or hammer id if its prefixed with ~) and deletes them.
 		// useful for preventing the closing of certain doors or other one time events that would prevent new player progression.
@@ -70,7 +80,7 @@
 				"output" "OnTrigger"
 				"origin" "-1088 -784 705"
 				"angles" "0 90 0"
-				"teleportall" "false"
+				"teleportall" "0"
 			}
 		}
 	}
@@ -82,8 +92,18 @@
 		
 		"RequirePlayerTriggers"
 		{
-			"a01-middletrigger_elevator_move" "10"
-			"a03-a04_trigger_elevator_move" "10"
+			"a01-middletrigger_elevator_move"
+			{
+				"WaitTime" "10"
+				"TeleportAll" "1"
+				"Name" "elevator"
+			}
+			"a01-a02_trigger_elevator_move"
+			{
+				"WaitTime" "10"
+				"TeleportAll" "1"
+				"Name" "elevator"
+			}
 		}
 		
 		"DeleteOutputs"
@@ -109,7 +129,7 @@
 				"output" "OnTrigger"
 				"origin" "-256 -160 616"
 				"angles" "0 90 0"
-				"teleportall" "false"
+				"teleportall" "0"
 			}
 		}
 	}
@@ -121,8 +141,16 @@
 		
 		"RequirePlayerTriggers"
 		{
-			"a02-middle_trigger_elevator_move" "10"
-			"a02-a03_trigger_elevator_move" "10"
+			"a02-middle_trigger_elevator_move"
+			{
+				"WaitTime" "10"
+				"TeleportAll" "1"
+			}
+			"a02-a03_trigger_elevator_move"
+			{
+				"WaitTime" "10"
+				"TeleportAll" "1"
+			}
 		}
 		
 		"DeleteOutputs"
@@ -147,7 +175,7 @@
 				"output" "OnStartTouch"
 				"origin" "666 197 613"
 				"angles" "0 180 0"
-				"teleportall" "false"
+				"teleportall" "0"
 			}
 		}
 	}

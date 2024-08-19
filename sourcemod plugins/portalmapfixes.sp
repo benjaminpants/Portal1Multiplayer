@@ -104,6 +104,24 @@ public void OnMapInit()
 	serverCommandEntity.Append("targetname","pmp_servercommand");
 	delete serverCommandEntity;
 
+	bool deleteTransitions = false;
+	// load the config early so we can check it
+	KeyValues mt = LoadManualConfig();
+	char mapName[65];
+	GetCurrentMap(mapName,65);
+	if (mt != null)
+	{
+		if (mt.JumpToKey(mapName))
+		{
+			deleteTransitions = (mt.GetNum("PreserveTransitions") != 1);
+			mt.Rewind();
+			if (!deleteTransitions)
+			{
+				PrintToServer("Manual config says to preserve trigger_transition!");
+			}
+		}
+	}
+
 	int entLumpLength = EntityLump.Length();
 	// iterate through backwards so we can delete things from the lump without breaking things
 	for (int i = entLumpLength - 1; i >= 0; i--)
@@ -286,7 +304,7 @@ public void OnMapInit()
 		}
 
 		// delete any trigger_transitions, as these cause elevators to disappear if changelevel is used
-		if (strcmp(classN, "trigger_transition") == 0)
+		if (deleteTransitions && (strcmp(classN, "trigger_transition") == 0))
 		{
 			EntityLump.Erase(i);
 			if (!modifiedEntry)
@@ -303,11 +321,8 @@ public void OnMapInit()
 	PrintToServer("Modified/Deleted %i entities!", entitiesChangedOrDeleted);
 
 	PrintToServer("Performing manual changes...");
-	KeyValues mt = LoadManualConfig();
 	if (mt == null) return;
 	entitiesChangedOrDeleted = 0;
-	char mapName[65];
-	GetCurrentMap(mapName,65);
 	if (!mt.JumpToKey(mapName))
 	{
 		delete mt;
@@ -568,6 +583,7 @@ EntityLumpEntry SearchForEntityInLump(const char[] targetNameOrHammerId, int max
 public void OnMapStart()
 {
 	CreateTimer(0.1, CheckTrigger, 0, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
+	PrecacheSound("sound/buttons/button9.wav");
 }
 
 public void OnMapEnd()
@@ -600,6 +616,7 @@ Action TimerExpire(Handle timer, int hammerId)
 		}
 	}
 	g_triggersActivated[g_currentTriggerIndex] = true;
+	EmitSoundToAll("sound/buttons/button9.wav");
 	ResetAllPlayerTriggers();
 }
 
@@ -641,7 +658,10 @@ Action CheckTrigger(Handle timer)
 	{
 		if (IsValidEntity(ent)) 
 		{
-			AcceptEntityInput(ent, "CountPlayersInZone");
+			if (GetEntProp(ent, Prop_Data, "m_spawnflags") == 0)
+			{
+				AcceptEntityInput(ent, "CountPlayersInZone");
+			}
 		}
 	}
 }

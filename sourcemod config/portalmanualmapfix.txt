@@ -145,11 +145,13 @@
 			{
 				"WaitTime" "10"
 				"TeleportAll" "1"
+				"Name" "elevator"
 			}
 			"a02-a03_trigger_elevator_move"
 			{
 				"WaitTime" "10"
 				"TeleportAll" "1"
+				"Name" "elevator"
 			}
 		}
 		
@@ -163,10 +165,18 @@
 			{
 				"OnStartTouch" "a02-middle_elevator_door_model_close,Trigger,,0,-1"
 			}
+			// do this so the elevator doesn't move without the player
+			"choreo_AI_02_B_success"
+			{
+				"OnCompletion" "a02-a03_trigger_elevator_move2,Enable,,0,-1"
+			}
 		}
 		"AddOutputs"
 		{
-			
+			"a02-a03_trigger_elevator_move"
+			{
+				"OnStartTouch" "a02-a03_trigger_elevator_move2,Enable,,5,-1"
+			}
 		}
 		"CreateSpawns"
 		{
@@ -175,6 +185,576 @@
 				"output" "OnStartTouch"
 				"origin" "666 197 613"
 				"angles" "0 180 0"
+				"teleportall" "0"
+			}
+		}
+	}
+
+	"testchmb_a_03"
+	{
+		
+		"PlayerStartToMove" "~146"
+		
+		"RequirePlayerTriggers"
+		{
+			"a03-middle_trigger_elevator_move"
+			{
+				"WaitTime" "10"
+				"TeleportAll" "1"
+				"Name" "elevator"
+			}
+			"a03-a04_trigger_elevator_move"
+			{
+				"WaitTime" "10"
+				"TeleportAll" "1"
+				"Name" "elevator"
+			}
+		}
+		
+		"DeleteOutputs"
+		{
+			"~18755"
+			{
+				"OnStartTouch" "a02-a03_elevator_door_model_close,Trigger,,0,-1"
+			}
+			"~390575"
+			{
+				"OnStartTouch" "a03-middle_elevator_door_model_close,Trigger,,0,-1"
+			}
+		}
+		"AddOutputs"
+		{
+			
+		}
+		"CreateSpawns"
+		{
+			"a03-middle_trigger_elevator_move"
+			{
+				"output" "OnStartTouch"
+				"origin" "380 0 1384"
+				"angles" "0 180 0"
+				"teleportall" "0"
+			}
+		}
+	}
+
+	"testchmb_a_04"
+	{
+		
+		"PlayerStartToMove" "~428"
+		
+		"RequirePlayerTriggers"
+		{
+			"a04-a05_trigger_elevator_move"
+			{
+				"WaitTime" "10"
+				"TeleportAll" "1"
+				"Name" "elevator"
+			}
+		}
+		
+		"DeleteOutputs"
+		{
+			"~91470"
+			{
+				"OnStartTouch" "a03-a04_elevator_door_model_close,Trigger,,0,-1"
+			}
+		}
+		"AddOutputs"
+		{
+			
+		}
+		"CreateSpawns"
+		{
+			
+		}
+	}
+
+	"testchmb_a_05"
+	{
+		
+		"PlayerStartToMove" "~2727"
+		
+		"RequirePlayerTriggers"
+		{
+			"a05_a06_trigger_elevator_move"
+			{
+				"WaitTime" "10"
+				"TeleportAll" "1"
+				"Name" "elevator"
+			}
+		}
+		
+		"DeleteOutputs"
+		{
+			"~73353"
+			{
+				"OnStartTouch" "a05_a06_elevator_door_model_close,Trigger,,0,-1"
+			}
+		}
+		"AddOutputs"
+		{
+			
+		}
+		"CreateSpawns"
+		{
+			
+		}
+	}
+
+	"testchmb_a_06"
+	{
+		
+		"PlayerStartToMove" "~69"
+		
+		"RequirePlayerTriggers"
+		{
+			"trigger_elevator_move_a06_07"
+			{
+				"WaitTime" "10"
+				"TeleportAll" "1"
+				"Name" "elevator"
+			}
+		}
+		
+		"DeleteOutputs"
+		{
+			"~73353"
+			{
+				"OnStartTouch" "a05_a06_elevator_door_model_close,Trigger,,0,-1"
+			}
+			"~1919"
+			{
+				"OnStartTouch" "door_right_a06_1,Close,,0,-1"
+				"OnStartTouch" "door_left_a06_1,Close,,0,-1"
+			}
+			"~1945"
+			{
+				"OnStartTouch" "door_left_a06_2,Close,,0,-1"
+				"OnStartTouch" "door_right_a06_2,Close,,0,-1"
+			}
+		}
+		"AddOutputs"
+		{
+			
+		}
+		"CreateSpawns"
+		{
+			"~1919"
+			{
+				"output" "OnStartTouch"
+				"origin" "-1064 128 168"
+				"angles" "0 0 0"
+				"teleportall" "0"
+			}
+			"~1945"
+			{
+				"output" "OnStartTouch"
+				"origin" "48 128 172"
+				"angles" "0 0 0"
+				"teleportall" "0"
+			}
+		}
+	}
+
+	"testchmb_a_07"
+	{
+		
+		"PlayerStartToMove" "~898"
+		
+		"RequirePlayerTriggers"
+		{
+			"07a_07b_trigger_elevator_move"
+			{
+				"WaitTime" "20"
+				"TeleportAll" "1"
+				"Name" "elevator"
+			}
+			"a07_08_trigger_elevator_move"
+			{
+				"WaitTime" "15"
+				"TeleportAll" "1"
+				"Name" "elevator"
+			}
+		}
+		
+		"DeleteOutputs"
+		{
+			"~523269"
+			{
+				"OnStartTouch" "elevator_door_model_close_a06_07,Trigger,,0,-1"
+			}
+		}
+		"AddOutputs"
+		{
+			
+		}
+		"CreateSpawns"
+		{
+			"floor_portalgun_rm6"
+			{
+				"output" "OnPlayerPickup"
+				"origin" "-192 -336 164"
+				"angles" "0 270 0"
+				"teleportall" "1"
+			}
+			"07a_07b_trigger_elevator_move"
+			{
+				"output" "OnStartTouch"
+				"origin" "-512 -1120 812"
+				"angles" "0 0 0"
+				"teleportall" "0"
+			}
+		}
+	}
+
+	"testchmb_a_08"
+	{
+		
+		"PlayerStartToMove" "~656811"
+		
+		"RequirePlayerTriggers"
+		{
+			"a08_09_trigger_elevator_move"
+			{
+				"WaitTime" "10"
+				"TeleportAll" "1"
+				"Name" "elevator"
+			}
+		}
+		
+		"DeleteOutputs"
+		{
+			"~123050"
+			{
+				"OnStartTouch" "a07_08_elevator_door_model_close,Trigger,,0,-1"
+			}
+		}
+		"AddOutputs"
+		{
+			
+		}
+		"CreateSpawns"
+		{
+
+		}
+	}
+
+	"testchmb_a_09"
+	{
+		
+		"PlayerStartToMove" "~146"
+		
+		"RequirePlayerTriggers"
+		{
+			"a09_a10_trigger_elevator_move"
+			{
+				"WaitTime" "20"
+				"TeleportAll" "1"
+				"Name" "elevator"
+			}
+		}
+		
+		"DeleteOutputs"
+		{
+			"~18755"
+			{
+				"OnStartTouch" "a08_a09_elevator_door_model_close,Trigger,,0,-1"
+			}
+		}
+		"AddOutputs"
+		{
+			
+		}
+		"CreateSpawns"
+		{
+
+		}
+	}
+
+	"testchmb_a_10"
+	{
+		
+		"PlayerStartToMove" "~380701"
+		
+		"RequirePlayerTriggers"
+		{
+			"a10_a11_trigger_elevator_move"
+			{
+				"WaitTime" "30"
+				"TeleportAll" "1"
+				"Name" "elevator"
+			}
+		}
+		
+		"DeleteOutputs"
+		{
+			"trigger_elevator_10"
+			{
+				"OnStartTouch" "a09_a10_elevator_door_model_close,Trigger,,0,1"
+			}
+			"lift_up_trigger_a"
+			{
+				"OnTrigger" "lift_a_rm8,Close,,0,-1"
+			}
+		}
+		"AddOutputs"
+		{
+			
+		}
+		"CreateSpawns"
+		{
+			"lift_up_trigger_a"
+			{
+				"output" "OnTrigger"
+				"origin" "-448 -1688 -216"
+				"angles" "0 90 0"
+				"teleportall" "0"
+			}
+		}
+	}
+
+	"testchmb_a_11"
+	{
+		
+		"PlayerStartToMove" "~12450"
+		
+		"RequirePlayerTriggers"
+		{
+			"a11_a13_trigger_elevator_move"
+			{
+				"WaitTime" "20"
+				"TeleportAll" "1"
+				"Name" "elevator"
+			}
+		}
+		
+		"DeleteOutputs"
+		{
+			"~346654"
+			{
+				"OnStartTouch" "a10_a11_elevator_door_model_close,Trigger,,0,-1"
+			}
+		}
+		"AddOutputs"
+		{
+			
+		}
+		"CreateSpawns"
+		{
+			
+		}
+	}
+
+	"testchmb_a_13"
+	{
+		
+		"PlayerStartToMove" "~22031"
+		
+		"RequirePlayerTriggers"
+		{
+			"a13_a14_trigger_elevator_move"
+			{
+				"WaitTime" "20"
+				"TeleportAll" "1"
+				"Name" "elevator"
+			}
+		}
+		
+		"DeleteOutputs"
+		{
+			"~328902"
+			{
+				"OnStartTouch" "a11_a13_elevator_door_model_close,Trigger,,0,-1"
+			}
+		}
+		"AddOutputs"
+		{
+			
+		}
+		"CreateSpawns"
+		{
+			"~359496"
+			{
+				"output" "OnTrigger"
+				"origin" "1280 456 44"
+				"angles" "0 270 0"
+				"teleportall" "0"
+			}
+		}
+	}
+
+	"testchmb_a_14"
+	{
+		
+		"PlayerStartToMove" "~830"
+		
+		"RequirePlayerTriggers"
+		{
+			"a14_a15_trigger_elevator_close"
+			{
+				"WaitTime" "30"
+				"TeleportAll" "1"
+				"Name" "elevator"
+			}
+		}
+		// we do some weird stuff here (changing a class and naming an unnamed trigger) to avoid some annoyance if they skip the puzzle
+		"DeleteOutputs"
+		{
+			"~249676"
+			{
+				"OnStartTouch" "a13_a14_elevator_door_model_close,Trigger,,0,-1"
+			}
+			"~732293"
+			{
+				"classname" "trigger_autosave"
+			}
+			// disable this so that the elevator doesnt activate without the other players
+			"vo_ai_success_a14"
+			{
+				"OnCompletion" "trigger_elevator_foward_after_vo,Enable,,0,-1"
+			}
+		}
+		"AddOutputs"
+		{
+			"~50239"
+			{
+				"targetname" "deletemetopreventsoftlocks"
+			}
+			"~732293"
+			{
+				"OnTrigger" "deletemetopreventsoftlocks,Kill,,0,-1"
+				"classname" "trigger_once"
+				"spawnflags" "1"
+			}
+			"a14_a15_trigger_elevator_close"
+			{
+				"OnStartTouch" "trigger_elevator_foward_after_vo,Enable,,5,-1"
+			}
+		}
+		"CreateSpawns"
+		{
+			"~50239"
+			{
+				"output" "OnTrigger"
+				"origin" "1056 752 1192"
+				"angles" "0 90 0"
+				"teleportall" "0"
+			}
+			"~732293"
+			{
+				"output" "OnTrigger"
+				"origin" "-608 640 1064"
+				"angles" "0 180 0"
+				"teleportall" "0"
+			}
+		}
+	}
+
+	"testchmb_a_15"
+	{
+		
+		"PlayerStartToMove" "~1172"
+		
+		// preserve trigger_transition since we use it for a particular work around.
+		"PreserveTransitions" "1"
+
+		"RequirePlayerTriggers"
+		{
+			"~2097756"
+			{
+				"WaitTime" "30"
+				"TeleportAll" "1"
+				"Name" "exit"
+			}
+		}
+		// we use spawnflags to disable the game_zone until a specific trigger is touched
+		// as the trigger itself is far too small to make a good wait zone
+		// but just using the alternate trigger is too large
+		"DeleteOutputs"
+		{
+			"trigger_dialogue01_lab2"
+			{
+				"OnStartTouch" "a14_a15_elevator_door_model_close,Trigger,,0,-1"
+			}
+			// keep the floating platforms going
+			"~330151"
+			{
+				"OnStartTouch" "railcart_respawn_timer,Disable,,0,-1"
+				"OnStartTouch" "rail_track_lab2_6,DisablePath,,0,-1"
+			}
+			// trigger_changelevel
+			"~2105616"
+			{
+				"classname" "trigger_changelevel"
+			}
+			"~2097756"
+			{
+				"targetname" "landmark_transition_a_15_00"
+			}
+			// this clip is stupid
+			"stop_player_from_transitioning_without_using_both_portals_here"
+			{
+				"Solidity" "0"
+			}
+			"railcart_respawn_timer"
+			{
+				"RefireTime" "25"
+			}
+			"relay_start_tracktrain_spawning"
+			{
+				"OnTrigger" "railcart_respawn_timer,Enable,,20,-1"
+			}
+			
+		}
+		"AddOutputs"
+		{
+			"~2097756"
+			{
+				"targetname" "pmp_transitionarea"
+				"OnTrigger" "pmp_servercommand,Command,changelevel escape_00,2,-1"
+				"spawnflags" "1" //we use spawnflags to make something start disabled
+			}
+			"~2105616"
+			{
+				"classname" "trigger_once"
+				"spawnflags" "1"
+				"OnTrigger" "pmp_transitionarea,AddOutput,spawnflags 0,0,1"
+			}
+			"stop_player_from_transitioning_without_using_both_portals_here"
+			{
+				"Solidity" "1"
+			}
+			"railcart_respawn_timer"
+			{
+				"RefireTime" "12"
+			}
+			"relay_start_tracktrain_spawning"
+			{
+				"OnTrigger" "railcart_respawn_timer,Enable,,0,-1"
+			}
+		}
+		"CreateSpawns"
+		{
+			"trigger_upperdeck_autosave_lab2"
+			{
+				"output" "OnStartTouch"
+				"origin" "-2020 548 44"
+				"angles" "0 270 0"
+				"teleportall" "0"
+			}
+			"~1939535"
+			{
+				"output" "OnTrigger"
+				"origin" "-384 896 676"
+				"angles" "0 0 0"
+				"teleportall" "0"
+			}
+			"~788213"
+			{
+				"output" "OnTrigger"
+				"origin" "1632 512 1236"
+				"angles" "0 270 0"
 				"teleportall" "0"
 			}
 		}

@@ -2,7 +2,6 @@ TODO:
 - Fix neurotoxin fake player being kicked when server goes into hibernation???
 - Fix neurotoxin fake player not getting networked
 - Make players have a grace period where they don't collide with other players when they initially spawn
-- add manual fixes for all official maps
 - change rocket turret targetting behavior so it targets the closest player relative to the end of it's beam.
 - Find a way to delete the really broken portal ragdolls on death.
 - Replace all old methods of getting player portal guns to use functions now that we have those working

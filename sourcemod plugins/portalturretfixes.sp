@@ -79,7 +79,7 @@ public void RecalculateRocketTurretTarget(int entityId)
 	int foundClient = -1;
 	
 	float turretPos[3];
-	GetEntPropVector(entityId, Prop_Send, "m_vecAbsOrigin", turretPos);
+	GetEntPropVector(entityId, Prop_Data, "m_vecAbsOrigin", turretPos);
 	for(int i = 1; i <= MaxClients; i++)
 	{
 		if (IsValidEntity(i))

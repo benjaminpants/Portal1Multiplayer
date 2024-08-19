@@ -664,7 +664,7 @@
 			"~2097756"
 			{
 				"WaitTime" "30"
-				"TeleportAll" "1"
+				"TeleportAll" "0"
 				"Name" "exit"
 			}
 		}
@@ -713,7 +713,7 @@
 			{
 				"targetname" "pmp_transitionarea"
 				"OnTrigger" "pmp_servercommand,Command,changelevel escape_00,2,-1"
-				"spawnflags" "1" //we use spawnflags to make something start disabled
+				"spawnflags" "16384" //we use spawnflags to make something start disabled
 			}
 			"~2105616"
 			{
@@ -758,5 +758,172 @@
 				"teleportall" "0"
 			}
 		}
+	}
+
+	"escape_00"
+	{
+		
+		"PlayerStartToMove" "~397"
+		
+		"RequirePlayerTriggers"
+		{
+			"changelevel_escape_00_01"
+			{
+				"WaitTime" "20"
+				"TeleportAll" "0"
+				"Name" "exit"
+			}
+		}
+		
+		"DeleteOutputs"
+		{
+			
+		}
+		"AddOutputs"
+		{
+			"changelevel_escape_00_01"
+			{
+				"origin" "0 0 -192"
+				"OnTrigger" "pmp_servercommand,Command,changelevel escape_01,2,-1"
+			}
+		}
+		"CreateSpawns"
+		{
+			"~274400"
+			{
+				"output" "OnTrigger"
+				"origin" "640 48 -524"
+				"angles" "0 90 0"
+				"teleportall" "0"
+			}
+			"~594"
+			{
+				"output" "OnStartTouch"
+				"origin" "384 0 372"
+				"angles" "0 270 0"
+				"teleportall" "0"
+			}
+		}
+	}
+
+	"escape_01"
+	{
+		
+		"PlayerStartToMove" "~34778"
+		
+		"RequirePlayerTriggers"
+		{
+			"changelevel_escape_01_02"
+			{
+				"WaitTime" "30"
+				"TeleportAll" "0"
+				"Name" "exit"
+			}
+			"~529962"
+			{
+				"WaitTime" "10"
+				"TeleportAll" "0"
+				"Name" "trap"
+			}
+		}
+		
+		"DeleteOutputs"
+		{
+			"~461041"
+			{
+				"OnStartTouch" "brush_block_backtrack_03,Close,,1,-1"
+				"OnStartTouch" "brush_block_backtrack_04,Close,,0,-1"
+				"OnStartTouch" "block_crazy_player_escaping_trap,Enable,,0,-1"
+			}
+			"~457098"
+			{
+				"OnStartTouch" "trap1_shut_small_pistons,Trigger,,0,-1"
+			}
+		}
+		"AddOutputs"
+		{
+			"changelevel_escape_01_02"
+			{
+				"OnTrigger" "pmp_servercommand,Command,changelevel escape_02,2,-1"
+			}
+		}
+		"CreateSpawns"
+		{
+			"~547649"
+			{
+				"output" "OnTrigger"
+				"origin" "-1800 1600 -340"
+				"angles" "0 0 0"
+				"teleportall" "0"
+			}
+			"~529962"
+			{
+				"output" "OnTrigger"
+				"origin" "-1656 2624 -588"
+				"angles" "0 180 0"
+				"teleportall" "0"
+			}
+		}
+	}
+
+	"escape_02"
+	{
+		
+		"PlayerStartToMove" "~133238"
+		
+		"RequirePlayerTriggers"
+		{
+			"~659275"
+			{
+				"WaitTime" "60"
+				"TeleportAll" "0"
+				"Name" "central ai chamber"
+			}
+		}
+		
+		"DeleteOutputs"
+		{
+			// stop the game from getting softlocked if some idiot jumps into the incinerator for the "funny"
+			"~831692"
+			{
+				"OnStartTouch" "fade_to_red,Fade,,0,-1"
+				"OnStartTouch" "button_open_disposal_hatch1,Kill,,0,-1"
+			}
+			"~816089"
+			{
+				"classname" "trigger_autosave"
+			}
+		}
+		"AddOutputs"
+		{
+			"~816089"
+			{
+				"classname" "trigger_once"
+				"spawnflags" "1"
+			}
+			"relay_end_game_logic"
+			{
+				"OnTrigger" "pmp_servercommand,Command,callcampaigncommand,42,-1"
+			}
+		}
+		"CreateSpawns"
+		{
+			"~816089"
+			{
+				"output" "OnTrigger"
+				"origin" "4800 640 -332"
+				"angles" "0 180 0"
+				"teleportall" "0"
+			}
+
+			"~659275"
+			{
+				"output" "OnTrigger"
+				"origin" "8240 1216 468"
+				"angles" "0 0 0"
+				"teleportall" "0"
+			}
+		}
+
 	}
 }

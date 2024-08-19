@@ -13,23 +13,63 @@ public Plugin myinfo =
 	url = "https://github.com/benjaminpants/Portal1MultiplayerFixes"
 };
 
-int g_triggerIds[8];
-char g_triggerNames[8][33];
-bool g_triggersActivated[8];
-int g_triggerTimes[8];
-int g_triggerTotal = 0;
+int g_triggerIds[8]; //stores the ids of the triggers
+char g_triggerNames[8][33]; //stores the names of each trigger
+bool g_triggersActivated[8]; //stores whether or not each trigger has been activated
+int g_triggerTimes[8]; // stores the time of each trigger
+int g_triggerTotal = 0; //how many total triggers are in this map
 
 int g_currentTriggerIndex = -1;
 int g_currentTriggerEnt = -1;
 int g_currentTriggerCount = 0;
 int g_previousTriggerCount = 0;
+ConVar gcv_campaignCompleteConCommand;
 Handle g_currentTriggerTimer = INVALID_HANDLE;
 
 #define DEBUG_VERBOUS true
+#define MAPFIX_DISABLED_SPAWNFLAG 16384
 
 public void OnPluginStart()
 {
 	HookEntityOutput("game_zone_player", "OnPlayerInZone", OnPlayerInZone);
+	RegConsoleCmd("spawn", Command_GoToSpawn);
+	gcv_campaignCompleteConCommand = CreateConVar("sv_campaigncompletecommand", "changelevel testchmb_a_00", "The console command that gets ran when a campaign is 'completed'.");
+	RegServerCmd("callcampaigncommand", Command_CallCampaignCommand, "Calls the command specified in sv_campaigncompletecommand.", 0);
+}
+
+Action Command_CallCampaignCommand(int args)
+{
+	char command[512];
+	gcv_campaignCompleteConCommand.GetString(command, 512);
+	ServerCommand(command);
+}
+
+public Action Command_GoToSpawn(int client, int args)
+{
+	if (!client)
+	{
+		ReplyToCommand(client, "spawn command must be called from client!");
+		return Plugin_Handled;
+	}
+	int ent = -1;
+	while((ent = FindEntityByClassname(ent, "info_player_start")) != -1) 
+	{
+		if (IsValidEntity(ent)) 
+		{
+			char targetN[128];
+			GetEntPropString(ent, Prop_Data, "m_iName", targetN, 128)
+			if (strcmp(targetN, "portal_player_spawnpoint") == 0)
+			{
+				float spawnPos[3];
+				float zeroVelocity[3] = {0, ...};
+				GetEntPropVector(ent, Prop_Data, "m_vecAbsOrigin", spawnPos);
+				TeleportEntity(client, spawnPos, NULL_VECTOR, zeroVelocity);
+				return Plugin_Handled;
+			}
+		}
+	}
+	ReplyToCommand(client, "This map doesn't have a valid mapfixes spawn!");
+	return Plugin_Handled;
 }
 
 void OnPlayerInZone(const char[] output, int caller, int activator, float delay)
@@ -658,7 +698,7 @@ Action CheckTrigger(Handle timer)
 	{
 		if (IsValidEntity(ent)) 
 		{
-			if (GetEntProp(ent, Prop_Data, "m_spawnflags") == 0)
+			if (GetEntProp(ent, Prop_Data, "m_spawnflags") != MAPFIX_DISABLED_SPAWNFLAG)
 			{
 				AcceptEntityInput(ent, "CountPlayersInZone");
 			}

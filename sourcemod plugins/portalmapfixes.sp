@@ -3,6 +3,7 @@
 #include <entitylump>
 #include <keyvalues>
 #include <halflife>
+#include <portalutils>
 
 public Plugin myinfo =
 {
@@ -18,6 +19,7 @@ char g_triggerNames[8][33]; //stores the names of each trigger
 bool g_triggersActivated[8]; //stores whether or not each trigger has been activated
 bool g_playersInTrigger[MAXPLAYERS];
 int g_triggerTimes[8]; // stores the time of each trigger
+int g_triggerTeleports[8]; // stores whether or not each trigger teleports everyone
 int g_triggerTotal = 0; //how many total triggers are in this map
 
 int g_currentTriggerIndex = -1;
@@ -65,6 +67,9 @@ public Action Command_GoToSpawn(int client, int args)
 				float zeroVelocity[3] = {0, ...};
 				GetEntPropVector(ent, Prop_Data, "m_vecAbsOrigin", spawnPos);
 				TeleportEntity(client, spawnPos, NULL_VECTOR, zeroVelocity);
+				EmitGameSoundToAll("PortalPlayer.ExitPortal", ent);
+				bool fizzled[2];
+				FizzlePortalsBelongingToClient(client, fizzled);
 				return Plugin_Handled;
 			}
 		}
@@ -626,7 +631,9 @@ EntityLumpEntry SearchForEntityInLump(const char[] targetNameOrHammerId, int max
 public void OnMapStart()
 {
 	CreateTimer(0.1, CheckTrigger, 0, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
-	PrecacheSound("buttons/button14.wav");
+	PrecacheSound("buttons/lever7.wav");
+	PrecacheSound("ui/buttonrollover.wav");
+	PrecacheScriptSound("PortalPlayer.ExitPortal");
 }
 
 public void OnMapEnd()
@@ -659,7 +666,7 @@ Action TimerExpire(Handle timer, int hammerId)
 			}
 		}
 	}
-	EmitSoundToAll("buttons/button14.wav");
+	EmitSoundToAll("buttons/lever7.wav");
 	ResetAllPlayerTriggers();
 }
 
@@ -693,6 +700,7 @@ Action CheckTrigger(Handle timer)
 		{
 			if ((g_currentTriggerTimer == INVALID_HANDLE))
 			{
+				EmitSoundToAll("ui/buttonrollover.wav");
 				PrintToChatAll("A player has reached the %s! Proceeding in %i seconds...", g_triggerNames[g_currentTriggerIndex], g_triggerTimes[g_currentTriggerIndex]);
 				g_currentTriggerTimer = CreateTimer(float(g_triggerTimes[g_currentTriggerIndex]), TimerExpire, g_triggerIds[g_currentTriggerIndex], 0);
 			}

@@ -9,10 +9,11 @@
 		"PlayerStartToMove" "~359365"
 
 		// determines which triggers on the map will have their outputs moved to a corresponding logic_relay and will require all players to reach before time runs out
-		// the time given is stored in seconds as the value.
+		// TeleportType can be the following:
+		// 0 - Don't teleport anyone
+		// 1 - Teleport all players not in the trigger to the trigger's origin
+		// 2 - Teleport all players to the most recent spawnpoint
 		// note that all required player triggers will be treated the same, so you should only use these in cases where one is accessible(primarily elevators)
-		// (todo)while in one of these triggers, players will not collide with other players.
-		// (todo)once activated all players that aren't in it already will be teleported to the triggers origin.
 		// despite being the first listed, this is processed last so that DeleteOutputs and AddOutputs can be processed.
 		// note that any output that isnt OnTrigger or OnStartTouch will not be caried over to the logic relay and will remain on the trigger.(if this is a problem, use DeleteOutputs)
 		"RequirePlayerTriggers"
@@ -20,13 +21,13 @@
 			"trigger_elevator_move"
 			{
 				"WaitTime" "10"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 			"a00-a01_trigger_elevator_move"
 			{
 				"WaitTime" "10"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 		}
@@ -95,13 +96,13 @@
 			"a01-middletrigger_elevator_move"
 			{
 				"WaitTime" "10"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 			"a01-a02_trigger_elevator_move"
 			{
 				"WaitTime" "10"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 		}
@@ -144,13 +145,13 @@
 			"a02-middle_trigger_elevator_move"
 			{
 				"WaitTime" "10"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 			"a02-a03_trigger_elevator_move"
 			{
 				"WaitTime" "10"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 		}
@@ -205,13 +206,13 @@
 			"a03-middle_trigger_elevator_move"
 			{
 				"WaitTime" "10"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 			"a03-a04_trigger_elevator_move"
 			{
 				"WaitTime" "10"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 		}
@@ -253,7 +254,7 @@
 			"a04-a05_trigger_elevator_move"
 			{
 				"WaitTime" "10"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 		}
@@ -285,7 +286,7 @@
 			"a05_a06_trigger_elevator_move"
 			{
 				"WaitTime" "10"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 		}
@@ -317,7 +318,7 @@
 			"trigger_elevator_move_a06_07"
 			{
 				"WaitTime" "10"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 		}
@@ -372,13 +373,13 @@
 			"07a_07b_trigger_elevator_move"
 			{
 				"WaitTime" "20"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 			"a07_08_trigger_elevator_move"
 			{
 				"WaitTime" "15"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 		}
@@ -427,7 +428,7 @@
 			"a08_09_trigger_elevator_move"
 			{
 				"WaitTime" "10"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 		}
@@ -459,7 +460,7 @@
 			"a09_a10_trigger_elevator_move"
 			{
 				"WaitTime" "20"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 		}
@@ -491,7 +492,7 @@
 			"a10_a11_trigger_elevator_move"
 			{
 				"WaitTime" "30"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 		}
@@ -533,7 +534,7 @@
 			"a11_a13_trigger_elevator_move"
 			{
 				"WaitTime" "20"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 		}
@@ -565,7 +566,7 @@
 			"a13_a14_trigger_elevator_move"
 			{
 				"WaitTime" "20"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 		}
@@ -603,7 +604,7 @@
 			"a14_a15_trigger_elevator_close"
 			{
 				"WaitTime" "30"
-				"TeleportAll" "1"
+				"TeleportType" "1"
 				"Name" "elevator"
 			}
 		}
@@ -673,7 +674,7 @@
 			"~2097756"
 			{
 				"WaitTime" "30"
-				"TeleportAll" "0"
+				"TeleportType" "0"
 				"Name" "exit"
 			}
 		}
@@ -779,7 +780,7 @@
 			"changelevel_escape_00_01"
 			{
 				"WaitTime" "20"
-				"TeleportAll" "0"
+				"TeleportType" "0"
 				"Name" "exit"
 			}
 		}
@@ -825,13 +826,13 @@
 			"changelevel_escape_01_02"
 			{
 				"WaitTime" "30"
-				"TeleportAll" "0"
+				"TeleportType" "0"
 				"Name" "exit"
 			}
 			"~529962"
 			{
 				"WaitTime" "10"
-				"TeleportAll" "0"
+				"TeleportType" "2"
 				"Name" "trap"
 			}
 		}
@@ -885,7 +886,7 @@
 			"~659275"
 			{
 				"WaitTime" "60"
-				"TeleportAll" "0"
+				"TeleportType" "2"
 				"Name" "central ai chamber"
 			}
 		}

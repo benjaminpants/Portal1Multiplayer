@@ -19,7 +19,7 @@ char g_triggerNames[8][33]; //stores the names of each trigger
 bool g_triggersActivated[8]; //stores whether or not each trigger has been activated
 bool g_playersInTrigger[MAXPLAYERS];
 int g_triggerTimes[8]; // stores the time of each trigger
-int g_triggerTeleports[8]; // stores whether or not each trigger teleports everyone
+int g_triggerTeleports[8]; // the teleport type of each trigger
 int g_triggerTotal = 0; //how many total triggers are in this map
 
 int g_currentTriggerIndex = -1;
@@ -544,7 +544,7 @@ public void OnMapInit()
 			char zoneName[33];
 			mt.GetString("Name", zoneName, sizeof(zoneName));
 			int timeDelay = mt.GetNum("WaitTime");
-			int teleportAll = mt.GetNum("TeleportAll");
+			int teleportType = mt.GetNum("TeleportType");
 
 			// create the logic_relay
 			int lumpIndex = EntityLump.Append();
@@ -583,6 +583,7 @@ public void OnMapInit()
 			g_triggerTimes[g_triggerTotal] = timeDelay;
 			g_triggerIds[g_triggerTotal] = StringToInt(hammerIdBuffer);
 			g_triggerNames[g_triggerTotal] = zoneName;
+			g_triggerTeleports[g_triggerTotal] = teleportType;
 			g_triggerTotal++;
 			entitiesChangedOrDeleted++;
 			delete entLump; //we are done with it. carry on.
@@ -641,6 +642,21 @@ public void OnMapEnd()
 	ResetAllPlayerTriggers();
 }
 
+void TeleportAllInTriggerPlayers(float position[3])
+{
+	float zeroVelocity[3] = {0, ...};
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (IsValidEntity(i))
+		{
+			if (!g_playersInTrigger[i - 1])
+			{
+				TeleportEntity(i, position, NULL_VECTOR, zeroVelocity);
+			}
+		}
+	}
+}
+
 Action TimerExpire(Handle timer, int hammerId)
 {
 	g_currentTriggerCount = 0;
@@ -661,8 +677,39 @@ Action TimerExpire(Handle timer, int hammerId)
 			if (strcmp(relayName, targetName) == 0)
 			{
 				AcceptEntityInput(ent, "Trigger");
-				//PrintToServer("Found relay!");
 				break;
+			}
+		}
+	}
+	switch (g_triggerTeleports[g_currentTriggerIndex])
+	{
+		case 0:
+		{
+			// do nothing
+		}
+		case 1:
+		{
+			float triggerOrigin[3];
+			GetEntPropVector(g_currentTriggerEnt, Prop_Data, "m_vecAbsOrigin", triggerOrigin);
+			TeleportAllInTriggerPlayers(triggerOrigin);
+		}
+		case 2:
+		{
+			int ent = -1;
+			while((ent = FindEntityByClassname(ent, "info_player_start")) != -1) 
+			{
+				if (IsValidEntity(ent)) 
+				{
+					char targetN[128];
+					GetEntPropString(ent, Prop_Data, "m_iName", targetN, 128)
+					if (strcmp(targetN, "portal_player_spawnpoint") == 0)
+					{
+						float spawnPos[3];
+						GetEntPropVector(ent, Prop_Data, "m_vecAbsOrigin", spawnPos);
+						TeleportAllInTriggerPlayers(spawnPos);
+						break;
+					}
+				}
 			}
 		}
 	}

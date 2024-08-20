@@ -170,6 +170,11 @@
 			{
 				"OnCompletion" "a02-a03_trigger_elevator_move2,Enable,,0,-1"
 			}
+			"trigger_portal_spawn_a2_rm3a"
+			{
+				"OnStartTouch" "exit_door_right_a02_2,Close,,0,-1"
+				"OnStartTouch" "exit_door_left_a02_2,Close,,0,-1"
+			}
 		}
 		"AddOutputs"
 		{
@@ -383,6 +388,10 @@
 			"~523269"
 			{
 				"OnStartTouch" "elevator_door_model_close_a06_07,Trigger,,0,-1"
+			}
+			"trigger_enter_a09_2"
+			{
+				"OnStartTouch" "07a_07b_elevator_door_model_close,Trigger,,1,1"
 			}
 		}
 		"AddOutputs"

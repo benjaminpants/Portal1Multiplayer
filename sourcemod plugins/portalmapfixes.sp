@@ -16,6 +16,7 @@ public Plugin myinfo =
 int g_triggerIds[8]; //stores the ids of the triggers
 char g_triggerNames[8][33]; //stores the names of each trigger
 bool g_triggersActivated[8]; //stores whether or not each trigger has been activated
+bool g_playersInTrigger[MAXPLAYERS];
 int g_triggerTimes[8]; // stores the time of each trigger
 int g_triggerTotal = 0; //how many total triggers are in this map
 
@@ -83,11 +84,13 @@ void OnPlayerInZone(const char[] output, int caller, int activator, float delay)
 		return;
 	}
 	// todo: put alive checks
+	g_playersInTrigger[activator - 1] = true;
 	int entHammerId = GetEntProp(caller, Prop_Data, "m_iHammerID");
 	for (int i = 0; i < g_triggerTotal; i++)
 	{
 		if (g_triggerIds[i] == entHammerId)
 		{
+			if (g_triggersActivated[i]) return; //dont do anything if this trigger has already been activated
 			g_currentTriggerIndex = i;
 			g_currentTriggerEnt = caller;
 			break;
@@ -623,7 +626,7 @@ EntityLumpEntry SearchForEntityInLump(const char[] targetNameOrHammerId, int max
 public void OnMapStart()
 {
 	CreateTimer(0.1, CheckTrigger, 0, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
-	PrecacheSound("sound/buttons/button9.wav");
+	PrecacheSound("buttons/button14.wav");
 }
 
 public void OnMapEnd()
@@ -637,7 +640,8 @@ Action TimerExpire(Handle timer, int hammerId)
 	g_previousTriggerCount = 0;
 	// todo: timer expire logic...
 	//PrintToServer("Timer done! %i, %i, %i", g_currentTriggerEnt, hammerId, g_currentTriggerIndex);
-	AcceptEntityInput(g_currentTriggerEnt, "Kill"); //get rid of it so it cant fire again.
+	//AcceptEntityInput(g_currentTriggerEnt, "Kill"); //get rid of it so it cant fire again.
+	g_triggersActivated[g_currentTriggerIndex] = true;
 	char targetName[128];
 	Format(targetName, 128, "relay_%i", hammerId);
 	int ent = -1;
@@ -655,9 +659,28 @@ Action TimerExpire(Handle timer, int hammerId)
 			}
 		}
 	}
-	g_triggersActivated[g_currentTriggerIndex] = true;
-	EmitSoundToAll("sound/buttons/button9.wav");
+	EmitSoundToAll("buttons/button14.wav");
 	ResetAllPlayerTriggers();
+}
+
+void ShowCount()
+{
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (IsValidEntity(i))
+		{
+			SetHudTextParams(-1.0,0.1,0.2,91,222,255,255,0,3.0,0.0,2.0);
+			ShowHudText(i, 10, "%i/%i", g_currentTriggerCount, GetClientCount(false));
+		}
+	}
+}
+
+void ResetPlayersInTrigger()
+{
+	for (int i = 0; i < MAXPLAYERS; i++)
+	{
+		g_playersInTrigger[i] = false;
+	}
 }
 
 Action CheckTrigger(Handle timer)
@@ -675,6 +698,7 @@ Action CheckTrigger(Handle timer)
 			}
 			else
 			{
+				ShowCount();
 				if (g_currentTriggerCount == GetClientCount(false))
 				{
 					PrintToChatAll("All players have reached the %s! Proceeding...", g_triggerNames[g_currentTriggerIndex]);
@@ -694,6 +718,7 @@ Action CheckTrigger(Handle timer)
 	g_previousTriggerCount = g_currentTriggerCount;
 	g_currentTriggerCount = 0;
 	int ent = -1;
+	ResetPlayersInTrigger();
 	while((ent = FindEntityByClassname(ent, "game_zone_player")) != -1) 
 	{
 		if (IsValidEntity(ent)) 

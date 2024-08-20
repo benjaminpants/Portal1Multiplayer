@@ -1,5 +1,6 @@
 #include <sdktools>
 #include <sourcemod>
+#include <sdkhooks>
 #include <entitylump>
 #include <dhooks>
 #include <portalutils>
@@ -59,6 +60,21 @@ public void OnPluginStart()
 	{
 		PrintToServer("Failed to DHook CGameRules::FlPlayerFallDamage\n");
 	}
+}
+
+public Action OnGetGameDescription(char gameDesc[64])
+{
+	strcopy(gameDesc, 64, "Portal");
+	return Plugin_Changed;
+}
+
+bool SDKHookCollide(int entity, int collisiongroup, int contentsmask, bool originalResult)
+{
+	if (collisiongroup == 8)
+	{
+		return false;
+	}
+	return originalResult;
 }
 
 public void OnMapStart()
@@ -230,6 +246,7 @@ public void Event_PlayerSpawn(Event event, const char[] name, bool dontBroadcast
 	{
 		SetEntProp(client, Prop_Data, "m_bWearingSuit", false);
 	}
+	SDKHook(client, SDKHook_ShouldCollide, SDKHookCollide);
 	
 	ClearAllBadPortalGuns();
 	

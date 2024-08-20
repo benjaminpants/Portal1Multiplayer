@@ -695,7 +695,7 @@ Action TimerExpire(Handle timer, int hammerId)
 		}
 		case 2:
 		{
-			int ent = -1;
+			/*int ent = -1;
 			while((ent = FindEntityByClassname(ent, "info_player_start")) != -1) 
 			{
 				if (IsValidEntity(ent)) 
@@ -710,7 +710,7 @@ Action TimerExpire(Handle timer, int hammerId)
 						break;
 					}
 				}
-			}
+			}*/
 		}
 	}
 	EmitSoundToAll("buttons/lever7.wav");

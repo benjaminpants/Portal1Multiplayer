@@ -64,7 +64,7 @@ public Action Command_GoToSpawn(int client, int args)
 			if (strcmp(targetN, "portal_player_spawnpoint") == 0)
 			{
 				float spawnPos[3];
-				float zeroVelocity[3] = {0, ...};
+				float zeroVelocity[3] = {0.0, ...};
 				GetEntPropVector(ent, Prop_Data, "m_vecAbsOrigin", spawnPos);
 				TeleportEntity(client, spawnPos, NULL_VECTOR, zeroVelocity);
 				EmitGameSoundToAll("PortalPlayer.ExitPortal", ent);
@@ -644,7 +644,7 @@ public void OnMapEnd()
 
 void TeleportAllInTriggerPlayers(float position[3])
 {
-	float zeroVelocity[3] = {0, ...};
+	float zeroVelocity[3] = {0.0, ...};
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (IsValidEntity(i))
@@ -653,6 +653,36 @@ void TeleportAllInTriggerPlayers(float position[3])
 			{
 				TeleportEntity(i, position, NULL_VECTOR, zeroVelocity);
 			}
+		}
+	}
+}
+
+Action DelayedTeleportToSpawn(Handle timer, DataPack pack)
+{
+	int ent = -1;
+	float spawnPos[3];
+	float zeroVelocity[3] = {0.0, ...};
+	while((ent = FindEntityByClassname(ent, "info_player_start")) != -1) 
+	{
+		if (IsValidEntity(ent)) 
+		{
+			char targetN[128];
+			GetEntPropString(ent, Prop_Data, "m_iName", targetN, 128)
+			if (strcmp(targetN, "portal_player_spawnpoint") == 0)
+			{
+				GetEntPropVector(ent, Prop_Data, "m_vecAbsOrigin", spawnPos);
+				break;
+			}
+		}
+	}
+	pack.Reset();
+	int playerCount = pack.ReadCell();
+	for (int i = 0; i < playerCount; i++)
+	{
+		int player = pack.ReadCell();
+		if (IsValidEntity(player))
+		{
+			TeleportEntity(player, spawnPos, NULL_VECTOR, zeroVelocity);
 		}
 	}
 }
@@ -695,22 +725,23 @@ Action TimerExpire(Handle timer, int hammerId)
 		}
 		case 2:
 		{
-			/*int ent = -1;
-			while((ent = FindEntityByClassname(ent, "info_player_start")) != -1) 
+			int playerCount = 0;
+			DataPack datapack;
+			CreateDataTimer(0.1, DelayedTeleportToSpawn, datapack);
+			datapack.WriteCell(512);
+			for (int i = 1; i <= MaxClients; i++)
 			{
-				if (IsValidEntity(ent)) 
+				if (IsValidEntity(i))
 				{
-					char targetN[128];
-					GetEntPropString(ent, Prop_Data, "m_iName", targetN, 128)
-					if (strcmp(targetN, "portal_player_spawnpoint") == 0)
+					if (!g_playersInTrigger[i - 1])
 					{
-						float spawnPos[3];
-						GetEntPropVector(ent, Prop_Data, "m_vecAbsOrigin", spawnPos);
-						TeleportAllInTriggerPlayers(spawnPos);
-						break;
+						datapack.WriteCell(i);
+						playerCount++;
 					}
 				}
-			}*/
+			}
+			datapack.Reset(false);
+			datapack.WriteCell(playerCount);
 		}
 	}
 	EmitSoundToAll("buttons/lever7.wav");

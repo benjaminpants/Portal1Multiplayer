@@ -748,14 +748,26 @@ Action TimerExpire(Handle timer, int hammerId)
 	ResetAllPlayerTriggers();
 }
 
+void SetCountHudParams()
+{
+	SetHudTextParams(-1.0,0.1,0.2,91,222,255,255,0,3.0,0.0,2.0);
+}
+
+void SetCountDisclaimerHudParams()
+{
+	SetHudTextParams(-1.0,0.15,0.2,255,167,91,255,0,3.0,0.0,2.0);
+}
+
 void ShowCount()
 {
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (IsValidEntity(i))
 		{
-			SetHudTextParams(-1.0,0.1,0.2,91,222,255,255,0,3.0,0.0,2.0);
+			SetCountHudParams();
 			ShowHudText(i, 10, "%i/%i", g_currentTriggerCount, GetClientCount(false));
+			SetCountDisclaimerHudParams();
+			ShowHudText(i, 11, "Go to %s.", g_triggerNames[g_currentTriggerIndex]);
 		}
 	}
 }
@@ -779,7 +791,6 @@ Action CheckTrigger(Handle timer)
 			if ((g_currentTriggerTimer == INVALID_HANDLE))
 			{
 				EmitSoundToAll("ui/buttonrollover.wav");
-				PrintToChatAll("A player has reached the %s! Proceeding in %i seconds...", g_triggerNames[g_currentTriggerIndex], g_triggerTimes[g_currentTriggerIndex]);
 				g_currentTriggerTimer = CreateTimer(float(g_triggerTimes[g_currentTriggerIndex]), TimerExpire, g_triggerIds[g_currentTriggerIndex], 0);
 			}
 			else
@@ -787,8 +798,15 @@ Action CheckTrigger(Handle timer)
 				ShowCount();
 				if (g_currentTriggerCount == GetClientCount(false))
 				{
-					PrintToChatAll("All players have reached the %s! Proceeding...", g_triggerNames[g_currentTriggerIndex]);
 					TriggerTimer(g_currentTriggerTimer, false);
+					SetCountDisclaimerHudParams();
+					for (int i = 1; i <= MaxClients; i++)
+					{
+						if (IsValidEntity(i))
+						{
+							ShowHudText(i, 11, "Proceeding...");
+						}
+					}
 				}
 			}
 		}
@@ -796,8 +814,15 @@ Action CheckTrigger(Handle timer)
 		{
 			if ((g_currentTriggerTimer != INVALID_HANDLE))
 			{
-				PrintToChatAll("All players have left the %s! Cancelling...", g_triggerNames[g_currentTriggerIndex]);
 				ResetAllPlayerTriggers();
+				SetCountDisclaimerHudParams();
+				for (int i = 1; i <= MaxClients; i++)
+				{
+					if (IsValidEntity(i))
+					{
+						ShowHudText(i, 11, "Cancelled...");
+					}
+				}
 			}
 		}
 	}

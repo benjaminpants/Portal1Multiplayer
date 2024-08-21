@@ -22,13 +22,13 @@
 			{
 				"WaitTime" "10"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 			"a00-a01_trigger_elevator_move"
 			{
 				"WaitTime" "10"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 		}
 		// chooses specific outputs belonging to the specified targetname(or hammer id if its prefixed with ~) and deletes them.
@@ -97,13 +97,13 @@
 			{
 				"WaitTime" "10"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 			"a01-a02_trigger_elevator_move"
 			{
 				"WaitTime" "10"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 		}
 		
@@ -146,13 +146,13 @@
 			{
 				"WaitTime" "10"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 			"a02-a03_trigger_elevator_move"
 			{
 				"WaitTime" "10"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 		}
 		
@@ -207,13 +207,13 @@
 			{
 				"WaitTime" "10"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 			"a03-a04_trigger_elevator_move"
 			{
 				"WaitTime" "10"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 		}
 		
@@ -255,7 +255,7 @@
 			{
 				"WaitTime" "10"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 		}
 		
@@ -287,7 +287,7 @@
 			{
 				"WaitTime" "10"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 		}
 		
@@ -319,7 +319,7 @@
 			{
 				"WaitTime" "10"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 		}
 		
@@ -374,13 +374,13 @@
 			{
 				"WaitTime" "20"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 			"a07_08_trigger_elevator_move"
 			{
 				"WaitTime" "15"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 		}
 		
@@ -429,7 +429,7 @@
 			{
 				"WaitTime" "10"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 		}
 		
@@ -461,7 +461,7 @@
 			{
 				"WaitTime" "20"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 		}
 		
@@ -493,7 +493,7 @@
 			{
 				"WaitTime" "30"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 		}
 		
@@ -535,7 +535,7 @@
 			{
 				"WaitTime" "20"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 		}
 		
@@ -567,7 +567,7 @@
 			{
 				"WaitTime" "20"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 		}
 		
@@ -605,7 +605,7 @@
 			{
 				"WaitTime" "30"
 				"TeleportType" "1"
-				"Name" "elevator"
+				"Name" "the elevator"
 			}
 		}
 		// we do some weird stuff here (changing a class and naming an unnamed trigger) to avoid some annoyance if they skip the puzzle
@@ -833,7 +833,7 @@
 			{
 				"WaitTime" "10"
 				"TeleportType" "2"
-				"Name" "trap"
+				"Name" "the trap"
 			}
 		}
 		
@@ -887,7 +887,7 @@
 			{
 				"WaitTime" "60"
 				"TeleportType" "2"
-				"Name" "central ai chamber"
+				"Name" "GLaDOS' Chamber"
 			}
 		}
 		

@@ -26,6 +26,7 @@ int g_currentTriggerIndex = -1;
 int g_currentTriggerEnt = -1;
 int g_currentTriggerCount = 0;
 int g_previousTriggerCount = 0;
+float g_currentTriggerTimestamp = -1.0;
 ConVar gcv_campaignCompleteConCommand;
 Handle g_currentTriggerTimer = INVALID_HANDLE;
 
@@ -104,7 +105,7 @@ void OnPlayerInZone(const char[] output, int caller, int activator, float delay)
 	g_currentTriggerCount++;
 }
 
-void ResetAllPlayerTriggers()
+void ResetPlayerTriggerVariables()
 {
 	g_currentTriggerEnt = -1;
 	g_currentTriggerIndex = -1;
@@ -632,14 +633,14 @@ EntityLumpEntry SearchForEntityInLump(const char[] targetNameOrHammerId, int max
 public void OnMapStart()
 {
 	CreateTimer(0.1, CheckTrigger, 0, TIMER_REPEAT | TIMER_FLAG_NO_MAPCHANGE);
-	PrecacheSound("buttons/lever7.wav");
 	PrecacheSound("ui/buttonrollover.wav");
+	PrecacheSound("ambient/machines/ticktock1.wav");
 	PrecacheScriptSound("PortalPlayer.ExitPortal");
 }
 
 public void OnMapEnd()
 {
-	ResetAllPlayerTriggers();
+	ResetPlayerTriggerVariables();
 }
 
 void TeleportAllInTriggerPlayers(float position[3])
@@ -687,16 +688,13 @@ Action DelayedTeleportToSpawn(Handle timer, DataPack pack)
 	}
 }
 
-Action TimerExpire(Handle timer, int hammerId)
+void TriggerTimerExpire()
 {
 	g_currentTriggerCount = 0;
 	g_previousTriggerCount = 0;
-	// todo: timer expire logic...
-	//PrintToServer("Timer done! %i, %i, %i", g_currentTriggerEnt, hammerId, g_currentTriggerIndex);
-	//AcceptEntityInput(g_currentTriggerEnt, "Kill"); //get rid of it so it cant fire again.
 	g_triggersActivated[g_currentTriggerIndex] = true;
 	char targetName[128];
-	Format(targetName, 128, "relay_%i", hammerId);
+	Format(targetName, 128, "relay_%i", g_triggerIds[g_currentTriggerIndex]);
 	int ent = -1;
 	while((ent = FindEntityByClassname(ent, "logic_relay")) != -1) 
 	{
@@ -744,29 +742,75 @@ Action TimerExpire(Handle timer, int hammerId)
 			datapack.WriteCell(playerCount);
 		}
 	}
-	EmitSoundToAll("buttons/lever7.wav");
-	ResetAllPlayerTriggers();
+	ResetPlayerTriggerVariables();
 }
 
-void SetCountHudParams()
+Action TimerExpire(Handle timer)
 {
-	SetHudTextParams(-1.0,0.1,0.2,91,222,255,255,0,3.0,0.0,2.0);
+	ShowCount(false);
+	EmitSoundToAll("ui/buttonrollover.wav");
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (IsValidEntity(i))
+		{
+			SetCountDisclaimerHudParams(false);
+			ShowHudText(i, 11, "Timeout...");
+		}
+	}
+	TriggerTimerExpire();
 }
 
-void SetCountDisclaimerHudParams()
+void SetCountHudParams(bool hold)
 {
-	SetHudTextParams(-1.0,0.15,0.2,255,167,91,255,0,3.0,0.0,2.0);
+	SetHudTextParams(-1.0,0.1,hold ? 99999.0 : 0.2,91,222,255,255,0,3.0,0.0,2.0);
 }
 
-void ShowCount()
+int g_lastDisplayedTime = 0;
+void ShowCountdownText()
+{
+	int currentTime = RoundToCeil(g_currentTriggerTimestamp - GetEngineTime());
+	if (currentTime < g_lastDisplayedTime)
+	{
+		g_lastDisplayedTime = currentTime;
+		SetHudTextParams(-1.0,0.2,1.2,255,255,255,255,0,1.0,0.0,0.2);
+		for (int i = 1; i <= MaxClients; i++)
+		{
+			if (IsValidEntity(i))
+			{
+				if ((!g_playersInTrigger[i - 1]) && (currentTime <= 5))
+				{
+					EmitSoundToClient(i, "ambient/machines/ticktock1.wav", _, _, _, _, 0.25);
+				}
+				ShowHudText(i, 12, "Auto proceeding in %i...", currentTime);
+			}
+		}
+	}
+}
+
+void SetCountDisclaimerHudParams(bool hold)
+{
+	SetHudTextParams(-1.0,0.15,hold ? 99999.0 : 0.2,255,167,91,255,0,3.0,0.0,2.0);
+}
+
+void ShowCount(bool hold)
 {
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (IsValidEntity(i))
 		{
-			SetCountHudParams();
+			SetCountHudParams(hold);
 			ShowHudText(i, 10, "%i/%i", g_currentTriggerCount, GetClientCount(false));
-			SetCountDisclaimerHudParams();
+		}
+	}
+}
+
+void ShowDisclaimer(bool hold)
+{
+	for (int i = 1; i <= MaxClients; i++)
+	{
+		if (IsValidEntity(i))
+		{
+			SetCountDisclaimerHudParams(hold);
 			ShowHudText(i, 11, "Go to %s.", g_triggerNames[g_currentTriggerIndex]);
 		}
 	}
@@ -791,21 +835,35 @@ Action CheckTrigger(Handle timer)
 			if ((g_currentTriggerTimer == INVALID_HANDLE))
 			{
 				EmitSoundToAll("ui/buttonrollover.wav");
-				g_currentTriggerTimer = CreateTimer(float(g_triggerTimes[g_currentTriggerIndex]), TimerExpire, g_triggerIds[g_currentTriggerIndex], 0);
+				g_lastDisplayedTime = g_triggerTimes[g_currentTriggerIndex] + 1;
+				g_currentTriggerTimestamp = GetEngineTime() + float(g_triggerTimes[g_currentTriggerIndex]);
+				g_currentTriggerTimer = CreateTimer(float(g_triggerTimes[g_currentTriggerIndex]), TimerExpire, _, 0);
+				ShowCount(true);
+				ShowDisclaimer(true);
+				ShowCountdownText();
 			}
 			else
 			{
-				ShowCount();
+				ShowCountdownText();
 				if (g_currentTriggerCount == GetClientCount(false))
 				{
-					TriggerTimer(g_currentTriggerTimer, false);
-					SetCountDisclaimerHudParams();
+					ShowCount(false);
 					for (int i = 1; i <= MaxClients; i++)
 					{
 						if (IsValidEntity(i))
 						{
+							SetCountDisclaimerHudParams(false);
 							ShowHudText(i, 11, "Proceeding...");
 						}
+					}
+					//TriggerTimer(g_currentTriggerTimer, false);
+					TriggerTimerExpire(); // this should also kill the timer
+				}
+				else
+				{
+					if (g_previousTriggerCount != g_currentTriggerCount)
+					{
+						ShowCount(true);
 					}
 				}
 			}
@@ -814,12 +872,13 @@ Action CheckTrigger(Handle timer)
 		{
 			if ((g_currentTriggerTimer != INVALID_HANDLE))
 			{
-				ResetAllPlayerTriggers();
-				SetCountDisclaimerHudParams();
+				ShowCount(false);
+				ResetPlayerTriggerVariables();
 				for (int i = 1; i <= MaxClients; i++)
 				{
 					if (IsValidEntity(i))
 					{
+						SetCountDisclaimerHudParams(false);
 						ShowHudText(i, 11, "Cancelled...");
 					}
 				}
